@@ -1,6 +1,5 @@
 use graphics::types::Color;
 const SIZE: f64 = 50.0;
-use std::collections::HashMap;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     position: [f64;2],
@@ -28,6 +27,14 @@ impl Arena {
     }
     pub fn tile (&mut self, pos: [f64; 2])-> LightDrop {
         self.trails[pos[0] as usize][pos[1] as usize]
+    }
+    pub fn create_cycle(&mut self, pos: [f64; 2], clr: Color) {
+        self.cycles.push(Lightcycle {
+            dir:1.0,
+            trail:Vec::new(),
+            color:clr,
+            position: pos
+        });
     }
     pub fn add_from(&mut self, pos: [f64;2], owner:i32) -> bool {
         let mut last: [f64;2];
