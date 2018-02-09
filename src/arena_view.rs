@@ -3,6 +3,7 @@ use graphics::character::CharacterCache;
 use graphics::{Context, Graphics};
 use graphics;
 use opengl_graphics;
+use std::f64::consts;
 use rand::os::OsRng;
 use opengl_graphics::{Texture, TextureSettings, Filter};
 use std::path::Path;
@@ -74,7 +75,17 @@ rand_col[3] + gen.next_f32()];
             i += 1.0;
         }
         for cy in &controller.arena.cycles {
-            Image::new().rect([cy.position[0], cy.position[1], 15.0, 30.0]).draw(&self.textures[0], &c.draw_state, c.transform, g);
+            let deg = match cy.dir {
+                3.0 => consts::PI /2.0,
+                2.0 => consts::PI / 1.0,
+                1.0 => consts:: PI * 1.5 ,
+                0.0 => consts::PI / 0.5,
+                _ => 0.0
+            };
+            let transf = c.transform.trans(cy.position[0], cy.position[1]).rot_rad(deg).trans(-7.5, -15.0);
+            Image::new().rect([0.0, 0.0, 15.0, 30.0]).draw(&self.textures[0], &c.draw_state,transf , g);
+            println!("{}", deg);
+            c.reset();
         }
     }
 }

@@ -1,6 +1,6 @@
 use graphics::types::Color;
 const SIZE: f64 = 50.0;
-const SPEED: f64 = 5.0;
+const SPEED: f64 = 2.0;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     position: [f64;2],
@@ -32,22 +32,41 @@ impl Arena {
     }
     pub fn create_cycle(&mut self, pos: [f64; 2], clr: Color) {
         let mut nc = Lightcycle {
-            dir:3.0,
+            dir:1.0,
             trail:Vec::new(),
             color:clr,
             position: pos
         };
         &self.cycles.push(nc);
     }
-    pub fn move_cycles(&mut self) {
+    pub fn move_cycles(&mut self, sizes: (f64, f64)) {
         for mut cy in &mut self.cycles {
-            match  cy.dir {
-                0.0 => cy.position[1] -=SPEED,
-                1.0 => cy.position[0] -=SPEED,
-                2.0 => cy.position[1] += SPEED,
-                3.0 => cy.position[0] += SPEED,
-                _ => println!("This shouldn't be happening!")
-                
+            let xd = match cy.dir {
+                0.0 => 15.0,
+                1.0 => 30.0,
+                3.0 => 30.0,
+                2.0 => 15.0,
+                _ => 0.0
+            };
+            let yd = match cy.dir {
+                1.0 => 15.0,
+                0.0 => 30.0,
+                2.0 => 30.0,
+                3.0 => 15.0,
+                _ => 0.0
+            };
+            let mut to = match cy.dir {
+                0.0 => (cy.position[0], cy.position[1] - SPEED),
+                1.0 => (cy.position[0] - SPEED, cy.position[1]),
+                2.0 => (cy.position[0], cy.position[1] + SPEED),
+                3.0 => (cy.position[0] + SPEED,cy.position[1]),
+                _ => (0.0, 0.0)
+            };
+            if to.0 - (xd/2.0) > 0.0 && to.0 +(xd/2.0)  < sizes.0 && to.1 -(yd/2.0)> 0.0 && to.1 +(yd/2.0) < sizes.1 {
+                cy.position[0] = to.0;
+                cy.position[1] = to.1;
+            } else {
+                println!("NOPE{:?}{:?}", cy.position, sizes);
             }
         }
     }

@@ -20,6 +20,7 @@ impl ArenaController {
         }
         if let Some(Keyboard(Key::Right)) = e.press_args() {
             arena.cycles[0].dir = 3.0;
+            println!("RIGHT");
         }
         if let Some(Keyboard(Key::Down)) = e.press_args() {
             arena.cycles[0].dir = 2.0;
@@ -28,8 +29,8 @@ impl ArenaController {
             arena.cycles[0].dir = 0.0;
         }
     }
-    pub fn update(&mut self) {
+    pub fn update(&mut self, sizes:(f64, f64)) {
         let ref mut arena = self.arena;
-        arena.move_cycles();
+        arena.move_cycles(sizes);
     }
 }
