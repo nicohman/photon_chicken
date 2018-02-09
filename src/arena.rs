@@ -6,14 +6,14 @@ pub struct LightDrop {
     owner:i32,
 }
 pub struct Lightcycle {
-    position: [f64;2],
+    pub position: [f64;2],
     color:Color,
-    dir:f64,
+    pub dir:f64,
     trail:Vec<LightDrop>
 }
 pub struct Arena {
-    cycles:Vec<Lightcycle>,
-    trails:[[LightDrop;SIZE as usize];SIZE as usize],
+    pub cycles:Vec<Lightcycle>,
+    pub trails:[[LightDrop;SIZE as usize];SIZE as usize],
 }
 impl Arena {
     pub fn new ()-> Arena {
