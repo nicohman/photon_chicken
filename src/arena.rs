@@ -1,5 +1,6 @@
 use graphics::types::Color;
 const SIZE: f64 = 50.0;
+const SPEED: f64 = 5.0;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     position: [f64;2],
@@ -17,24 +18,38 @@ pub struct Arena {
 }
 impl Arena {
     pub fn new ()-> Arena {
-        Arena {
+        let mut a =  Arena {
             cycles: Vec::new(),
             trails:[[LightDrop {
                 position: [0.0;2],
                 owner: 0,
             };SIZE as usize];SIZE as usize],
-        }
+        };
+        a
     }
     pub fn tile (&mut self, pos: [f64; 2])-> LightDrop {
         self.trails[pos[0] as usize][pos[1] as usize]
     }
     pub fn create_cycle(&mut self, pos: [f64; 2], clr: Color) {
-        self.cycles.push(Lightcycle {
-            dir:1.0,
+        let mut nc = Lightcycle {
+            dir:3.0,
             trail:Vec::new(),
             color:clr,
             position: pos
-        });
+        };
+        &self.cycles.push(nc);
+    }
+    pub fn move_cycles(&mut self) {
+        for mut cy in &mut self.cycles {
+            match  cy.dir {
+                0.0 => cy.position[1] -=SPEED,
+                1.0 => cy.position[0] -=SPEED,
+                2.0 => cy.position[1] += SPEED,
+                3.0 => cy.position[0] += SPEED,
+                _ => println!("This shouldn't be happening!")
+                
+            }
+        }
     }
     pub fn add_from(&mut self, pos: [f64;2], owner:i32) -> bool {
         let mut last: [f64;2];
