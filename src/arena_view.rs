@@ -19,6 +19,7 @@ pub struct ArenaViewSet {
     pub border_color: Color,
     pub edge_color_board: Color,
     pub edge_color_tile: Color,
+    pub trail_color: Color,
     pub board_edge_radius: f64,
     pub tile_edge_radius: f64,
     pub texture_settings: TextureSettings,
@@ -42,6 +43,7 @@ impl ArenaViewSet {
             board_edge_radius: 3.0,
             tile_edge_radius: 1.0,
             text_color: [0.0, 0.0, 0.2, 1.0],
+            trail_color: [0.0, 0.6, 0.2, 1.0],
             lightcycle_color: [0.0, 0.0, 0.2, 1.0],
         }
     }
@@ -65,15 +67,25 @@ impl ArenaView {
         let mut i = 0.0;
         let mut gen = OsRng::new().unwrap();
 
-        while i < ((settings.size_x / settings.tile_size).round() * (settings.size_y / settings.tile_size).round()) {
             let mut rand_col = settings.border_color;
-            rand_col = [rand_col[0] + gen.next_f32(),rand_col[1] + gen.next_f32(),
+        while i < ((settings.size_x / settings.tile_size).round() * (settings.size_y / settings.tile_size).round()) {
+            /*rand_col = [rand_col[0] + gen.next_f32(),rand_col[1] + gen.next_f32(),
 rand_col[2] + gen.next_f32(),
-rand_col[3] + gen.next_f32()];
-            Rectangle::new(rand_col).draw([(i % (settings.size_x / settings.tile_size).round()) * settings.tile_size, (i / (settings.size_x / settings.tile_size).round()).floor() * settings.tile_size, settings.tile_size, settings.tile_size], &c.draw_state, c.transform, g);
-
+rand_col[3] + gen.next_f32()];*/
+            let x = (i % (settings.size_x / settings.tile_size).round()) * settings.tile_size;
+            let y = (i / (settings.size_x / settings.tile_size).round()).floor() * settings.tile_size;
+            Rectangle::new(rand_col).draw([0.0,0.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform.trans(x,y), g);
+            //println!("Drawing{} at {}, {}", i,x,y);
             i += 1.0;
         }
+        let mut y = 0;
+        for (key, value) in &controller.arena.trails {
+            if value.owner > 0 {
+                Rectangle::new(settings.trail_color).draw([value.position[0] * 15.0, value.position[1] * 15.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform, g);
+            }
+            y +=1;
+        }
+        println!("Total trails: {}", y);
         for cy in &controller.arena.cycles {
             let deg = match cy.dir {
                 3.0 => consts::PI /2.0,

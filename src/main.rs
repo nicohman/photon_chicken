@@ -29,6 +29,7 @@ fn main() {
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.create_cycle([100.0, 100.0], arena_view.settings.lightcycle_color);
+    arena_controller.arena.create_cycle([200.0, 200.0], arena_view.settings.lightcycle_color);    
     while let Some(e) = events.next(&mut window) {
 
         arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));  
@@ -38,7 +39,7 @@ fn main() {
             arena_view.settings.size_y = args.draw_height as f64; 
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
-                //clear([1.0;4], g);
+                clear(arena_view.settings.border_color, g);
                 arena_view.draw(&arena_controller, glyphs, &c, g);
             })
 
