@@ -1,7 +1,7 @@
 use graphics::types::Color;
 use std::collections::HashMap;
 const SIZE: f64 = 50.0;
-const SPEED: f64 = 2.0;
+const SPEED: f64 = 3.0;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     pub position: [f64;2],
@@ -55,7 +55,7 @@ impl Arena {
                     if Arena::is_dead(&cycles[i], drop) {
                         cycles[i].dead = true;
                         let mut t = 0;
-                        while t < 10 {
+                        while t < 30 {
                             deaths.push((i+1) as i32);
                             t+= 1
                         }
@@ -68,10 +68,13 @@ impl Arena {
             }        }
         deaths
     }
-    pub fn check_game(&mut self) {
+    pub fn check_game(&mut self) -> bool {
         if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() < 2 {
             println!("GAME OVER");
             self.reset_game();
+            true
+        } else {
+            false
         }
     }
     pub fn reset_game(&mut self) {
@@ -103,7 +106,8 @@ impl Arena {
             false
         }
     }
-    pub fn move_cycles(&mut self, sizes: (f64, f64)) {
+    pub fn move_cycles(&mut self, sizes: (f64, f64), multi:f64) -> Vec<i32>{
+        let mut deaths : Vec<i32> = Vec::new();
         for mut cy in &mut self.cycles {
             if cy.dead != true {
                 let xd = match cy.dir {
@@ -121,10 +125,10 @@ impl Arena {
                     _ => 0.0
                 };
                 let mut to = match cy.dir {
-                    0.0 => (cy.position[0], cy.position[1] - SPEED),
-                    1.0 => (cy.position[0] - SPEED, cy.position[1]),
-                    2.0 => (cy.position[0], cy.position[1] + SPEED),
-                    3.0 => (cy.position[0] + SPEED,cy.position[1]),
+                    0.0 => (cy.position[0], cy.position[1] - (SPEED*multi)),
+                    1.0 => (cy.position[0] - (SPEED * multi), cy.position[1]),
+                    2.0 => (cy.position[0], cy.position[1] + (multi *SPEED)),
+                    3.0 => (cy.position[0] + (multi * SPEED),cy.position[1]),
                     _ => (0.0, 0.0)
                 };
                 if to.0 - (xd/2.0) > 0.0 && to.0 +(xd/2.0)  < sizes.0 && to.1 -(yd/2.0)> 0.0 && to.1 +(yd/2.0) < sizes.1 {
@@ -151,10 +155,17 @@ impl Arena {
                     }
 
                 } else {
-                    //println!("NOPE{:?}{:?}", cy.position, sizes);
+                        cy.dead = true;
+                        let mut t = 0;
+                        while t < 30 {
+                            deaths.push((cy.owner) as i32);
+                            t+= 1
+                        }
+
                 }
             }
         }
+        deaths
     }
     pub fn add_from(&mut self, pos: [f64;2], owner:i32) -> bool {
         let mut last: [f64;2];

@@ -2,12 +2,14 @@ use piston::input::GenericEvent;
 use Arena;
 pub struct ArenaController {
     pub arena: Arena,
+    pub multi: f64,
     pub deaths: Vec<i32>
 }
 impl ArenaController {
     pub fn new(mut arena: Arena) -> ArenaController {
         let mut c = ArenaController {
             arena: arena,
+            multi:1.0,
             deaths:Vec::new(),
         };
         c
@@ -44,11 +46,17 @@ impl ArenaController {
 
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
+        self.multi = self.multi * 1.0001;
+        println!("{}", self.multi);
         let ref mut arena = self.arena;
-        arena.move_cycles(sizes);
+        for d in arena.move_cycles(sizes, self.multi) {
+            self.deaths.push(d);
+        }
         for d in arena.check_deaths(){
             self.deaths.push(d);
         }
-        arena.check_game();
+        if arena.check_game() {
+            self.multi = 1.0;
+        }
     }
 }

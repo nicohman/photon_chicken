@@ -118,7 +118,7 @@ impl ArenaView {
         if &controller.deaths.len() > &0 {
             println!("RENDERING");
             let toDisp = &controller.deaths.pop().unwrap();
-            Text::new_color(get_color(*toDisp), 50).draw("DEAD", glyphs, &c.draw_state, c.transform.trans(controller.arena.cycles[(*toDisp -1) as usize].position[0], controller.arena.cycles[(*toDisp-1) as usize].position[1]), g);
+            Text::new_color(get_color(*toDisp), 50).draw("DEAD", glyphs, &c.draw_state, c.transform.trans(/*controller.arena.cycles[(*toDisp -1) as usize].position[0], controller.arena.cycles[(*toDisp-1) as usize].position[1]*/50.0, 50.0), g);
         }
     }
 }
