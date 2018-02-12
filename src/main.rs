@@ -14,6 +14,7 @@ pub use arena::Arena;
 pub use arena_controller::ArenaController;
 pub use arena_view::{ArenaView, ArenaViewSet};
 mod arena;
+mod color_gen;
 mod arena_controller;
 mod arena_view;
 fn main() {

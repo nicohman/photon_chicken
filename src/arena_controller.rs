@@ -46,5 +46,6 @@ impl ArenaController {
     pub fn update(&mut self, sizes:(f64, f64)) {
         let ref mut arena = self.arena;
         arena.move_cycles(sizes);
+        arena.check_deaths();
     }
 }

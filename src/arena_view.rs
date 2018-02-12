@@ -8,6 +8,7 @@ use rand::os::OsRng;
 use opengl_graphics::{Texture, TextureSettings, Filter};
 use std::path::Path;
 use rand::Rng;
+use color_gen::get_color;
 use ArenaController;
 pub struct ArenaViewSet {
     pub position: [f64; 2],
@@ -63,7 +64,7 @@ impl ArenaView {
         use graphics::{Image, Line, Rectangle, Transformed};
         let ref settings = self.settings;
         let arena_rect = [settings.position[0], settings.position[1], settings.size_x, settings.size_y];
-        Rectangle::new(settings.bg_color).draw(arena_rect, &c.draw_state, c.transform, g);
+        Rectangle::new(settings.border_color).draw(arena_rect, &c.draw_state, c.transform, g);
         let mut i = 0.0;
         let mut gen = OsRng::new().unwrap();
 
@@ -74,18 +75,18 @@ rand_col[2] + gen.next_f32(),
 rand_col[3] + gen.next_f32()];*/
             let x = (i % (settings.size_x / settings.tile_size).round()) * settings.tile_size;
             let y = (i / (settings.size_x / settings.tile_size).round()).floor() * settings.tile_size;
-            Rectangle::new(rand_col).draw([0.0,0.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform.trans(x,y), g);
+           // Rectangle::new(rand_col).draw([0.0,0.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform.trans(x,y), g);
             //println!("Drawing{} at {}, {}", i,x,y);
             i += 1.0;
         }
         let mut y = 0;
         for (key, value) in &controller.arena.trails {
             if value.owner > 0 {
-                Rectangle::new(settings.trail_color).draw([value.position[0] * 15.0, value.position[1] * 15.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform, g);
+                Rectangle::new(get_color(value.owner)).draw([value.position[0] * 15.0, value.position[1] * 15.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform, g);
             }
             y +=1;
         }
-        println!("Total trails: {}", y);
+       // println!("Total trails: {}", y);
         for cy in &controller.arena.cycles {
             let deg = match cy.dir {
                 3.0 => consts::PI /2.0,
@@ -95,8 +96,10 @@ rand_col[3] + gen.next_f32()];*/
                 _ => 0.0
             };
             let transf = c.transform.trans(cy.position[0], cy.position[1]).rot_rad(deg).trans(-7.5, -15.0);
+            Rectangle::new(get_color(cy.owner)).draw([0.0,0.0, 15.0, 30.0], &c.draw_state, transf, g);
+
             Image::new().rect([0.0, 0.0, 15.0, 30.0]).draw(&self.textures[0], &c.draw_state,transf , g);
-            println!("{}", deg);
+          //  println!("{}", deg);
             c.reset();
         }
     }
