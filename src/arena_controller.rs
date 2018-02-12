@@ -49,5 +49,6 @@ impl ArenaController {
         for d in arena.check_deaths(){
             self.deaths.push(d);
         }
+        arena.check_game();
     }
 }

@@ -1,7 +1,7 @@
 use graphics::types::Color;
 use std::collections::HashMap;
 const SIZE: f64 = 50.0;
-const SPEED: f64 = 4.0;
+const SPEED: f64 = 2.0;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     pub position: [f64;2],
@@ -10,7 +10,6 @@ pub struct LightDrop {
 
 pub struct Lightcycle {
     pub position: [f64;2],
-    pub color:Color,
     pub dir:f64,
     pub dead: bool,
     pub owner: i32,
@@ -35,18 +34,17 @@ impl Arena {
             owner:0,
         } )).unwrap())
     }
-    pub fn create_cycle(&mut self, pos: [f64; 2], clr: Color) {
+    pub fn create_cycle(&mut self, pos: [f64; 2]) {
         let mut nc = Lightcycle {
-            dir:1.0,
+            dir:2.0,
             trail:Vec::new(),
-            color:clr,
             dead: false,
             owner: self.cycles.len() as i32 +1,
             position: pos
         };
         &self.cycles.push(nc);
     }
-    pub fn check_deaths(&mut self)  -> Vec<i32>{
+    pub fn check_deaths(&mut  self)  -> Vec<i32>{
         let mut cycles = &mut self.cycles;
         let mut y = 0;
         let mut deaths:Vec<i32> = Vec::new();
@@ -54,23 +52,36 @@ impl Arena {
             let mut i = 0;
             while i != cycles.len() {
                 if cycles[i].dead != true {
-                if Arena::is_dead(&cycles[i], drop) {
-                    cycles[i].dead = true;
-                    let mut t = 0;
-                    while t < 10 {
-                    deaths.push((i+1) as i32);
-                    t+= 1
+                    if Arena::is_dead(&cycles[i], drop) {
+                        cycles[i].dead = true;
+                        let mut t = 0;
+                        while t < 10 {
+                            deaths.push((i+1) as i32);
+                            t+= 1
+                        }
+                    } else {
+                        i += 1;
                     }
-                } else {
-                    i += 1;
-                }
                 } else {
                     i+=1;
                 }
             }        }
         deaths
     }
-
+    pub fn check_game(&mut self) {
+        if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() < 2 {
+            println!("GAME OVER");
+            self.reset_game();
+        }
+    }
+    pub fn reset_game(&mut self) {
+        if self.cycles.len() > 0 {
+            self.cycles = Vec::new();
+        }
+        self.create_cycle([900.0, 100.0]);
+        self.create_cycle([300.0, 100.0]);
+        self.trails = HashMap::new();
+    }
     pub fn is_dead(cy: &Lightcycle, drop: &LightDrop) -> bool {
         let xd = match cy.dir {
             1.0 => 30.0,
@@ -121,24 +132,24 @@ impl Arena {
                     let fly = (cy.position[1] / 15.0).floor();
                     cy.position[0] = to.0;
                     cy.position[1] = to.1;
-                        let mut pos = [flx, fly];
-                        let mut owner = cy.owner;
-                        let mut last: [f64;2];
-                        let name = pos[0].to_string()+"x"+&pos[1].to_string();
-                        if cy.trail.len() >= 50 {
-                            last = cy.trail.pop().unwrap().position;
-                            self.trails.remove(&(last[0].to_string()+"x"+&last[1].to_string()));
-                        }
-                        if self.trails.contains_key(&name) {
-                        } else {
-                            let light = LightDrop {
-                                position: pos,
-                                owner:owner
-                            };
-                            cy.trail.insert(0, light.clone());
-                            self.trails.insert(name, light);
-                        }
-                    
+                    let mut pos = [flx, fly];
+                    let mut owner = cy.owner;
+                    let mut last: [f64;2];
+                    let name = pos[0].to_string()+"x"+&pos[1].to_string();
+                    if cy.trail.len() >= 50 {
+                        last = cy.trail.pop().unwrap().position;
+                        self.trails.remove(&(last[0].to_string()+"x"+&last[1].to_string()));
+                    }
+                    if self.trails.contains_key(&name) {
+                    } else {
+                        let light = LightDrop {
+                            position: pos,
+                            owner:owner
+                        };
+                        cy.trail.insert(0, light.clone());
+                        self.trails.insert(name, light);
+                    }
+
                 } else {
                     //println!("NOPE{:?}{:?}", cy.position, sizes);
                 }
