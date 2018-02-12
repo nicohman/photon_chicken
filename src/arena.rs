@@ -46,15 +46,21 @@ impl Arena {
         };
         &self.cycles.push(nc);
     }
-    pub fn check_deaths(&mut self) {
+    pub fn check_deaths(&mut self)  -> Vec<i32>{
         let mut cycles = &mut self.cycles;
         let mut y = 0;
+        let mut deaths:Vec<i32> = Vec::new();
         for (key, drop) in &self.trails {
             let mut i = 0;
             while i != cycles.len() {
                 if cycles[i].dead != true {
                 if Arena::is_dead(&cycles[i], drop) {
                     cycles[i].dead = true;
+                    let mut t = 0;
+                    while t < 10 {
+                    deaths.push((i+1) as i32);
+                    t+= 1
+                    }
                 } else {
                     i += 1;
                 }
@@ -62,6 +68,7 @@ impl Arena {
                     i+=1;
                 }
             }        }
+        deaths
     }
 
     pub fn is_dead(cy: &Lightcycle, drop: &LightDrop) -> bool {

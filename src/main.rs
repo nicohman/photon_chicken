@@ -19,7 +19,7 @@ mod arena_controller;
 mod arena_view;
 fn main() {
     let opengl = OpenGL::V3_2;
-    let settings = WindowSettings::new("PC", [512;2]).opengl(opengl).exit_on_esc(false);
+    let settings = WindowSettings::new("PC", [512;2]).opengl(opengl).fullscreen(true).exit_on_esc(false);
     let mut window : GlutinWindow = settings.build().expect("Couldn't create window");
     let mut events = Events::new(EventSettings::new());
     let mut gl = GlGraphics::new(opengl);
@@ -41,7 +41,7 @@ fn main() {
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
                 clear(arena_view.settings.border_color, g);
-                arena_view.draw(&arena_controller, glyphs, &c, g);
+                arena_view.draw(&mut arena_controller, glyphs, &c, g);
             })
 
 

@@ -2,11 +2,13 @@ use piston::input::GenericEvent;
 use Arena;
 pub struct ArenaController {
     pub arena: Arena,
+    pub deaths: Vec<i32>
 }
 impl ArenaController {
     pub fn new(mut arena: Arena) -> ArenaController {
         let mut c = ArenaController {
             arena: arena,
+            deaths:Vec::new(),
         };
         c
     }
@@ -44,6 +46,8 @@ impl ArenaController {
     pub fn update(&mut self, sizes:(f64, f64)) {
         let ref mut arena = self.arena;
         arena.move_cycles(sizes);
-        arena.check_deaths();
+        for d in arena.check_deaths(){
+            self.deaths.push(d);
+        }
     }
 }

@@ -60,8 +60,8 @@ impl ArenaView {
             settings:settings,
         }
     }
-    pub fn draw<G: Graphics, C>(&self, controller:&ArenaController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
-        use graphics::{Image, Line, Rectangle, Transformed};
+    pub fn draw<G: Graphics, C>(&self, controller:&mut ArenaController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
+        use graphics::{Image, Line, Rectangle, Transformed, Text};
         let ref settings = self.settings;
         let arena_rect = [settings.position[0], settings.position[1], settings.size_x, settings.size_y];
         Rectangle::new(settings.border_color).draw(arena_rect, &c.draw_state, c.transform, g);
@@ -113,6 +113,12 @@ impl ArenaView {
                 //  println!("{}", deg);
                 c.reset();
             }
+        }
+
+        if &controller.deaths.len() > &0 {
+            println!("RENDERING");
+            let toDisp = &controller.deaths.pop().unwrap();
+            Text::new_color(get_color(*toDisp), 50).draw("DEAD", glyphs, &c.draw_state, c.transform.trans(controller.arena.cycles[(*toDisp -1) as usize].position[0], controller.arena.cycles[(*toDisp-1) as usize].position[1]), g);
         }
     }
 }
