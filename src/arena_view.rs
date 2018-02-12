@@ -39,8 +39,8 @@ impl ArenaViewSet {
             texture_settings: TextureSettings::new().filter(Filter::Nearest),
             bg_color: [0.8, 0.8, 1.0, 1.0],
             border_color: [0.0, 0.0, 0.2, 1.0],
-            edge_color_board: [0.0, 0.0, 0.2, 1.0],
-            edge_color_tile: [0.0, 0.0, 0.2, 1.0],
+            edge_color_board: [0.0, 0.0, 0.6, 1.0],
+            edge_color_tile: [0.0, 0.0, 0.4, 1.0],
             board_edge_radius: 3.0,
             tile_edge_radius: 1.0,
             text_color: [0.0, 0.0, 0.2, 1.0],
@@ -51,7 +51,7 @@ impl ArenaViewSet {
 }
 pub struct ArenaView {
     pub settings: ArenaViewSet,
-        pub textures: Vec<Texture>
+    pub textures: Vec<Texture>
 }
 impl ArenaView {
     pub fn new(settings:ArenaViewSet) -> ArenaView {
@@ -67,40 +67,52 @@ impl ArenaView {
         Rectangle::new(settings.border_color).draw(arena_rect, &c.draw_state, c.transform, g);
         let mut i = 0.0;
         let mut gen = OsRng::new().unwrap();
-
-            let mut rand_col = settings.border_color;
-        while i < ((settings.size_x / settings.tile_size).round() * (settings.size_y / settings.tile_size).round()) {
+        let c_line = Line::new(settings.edge_color_tile, settings.tile_edge_radius);
+        let mut rand_col = settings.border_color;
+        while i < (settings.size_x / settings.tile_size).round()  {
+            c_line.draw([i*settings.tile_size,0.0,i*settings.tile_size,settings.size_y],&c.draw_state,c.transform,g);
             /*rand_col = [rand_col[0] + gen.next_f32(),rand_col[1] + gen.next_f32(),
-rand_col[2] + gen.next_f32(),
-rand_col[3] + gen.next_f32()];*/
-            let x = (i % (settings.size_x / settings.tile_size).round()) * settings.tile_size;
-            let y = (i / (settings.size_x / settings.tile_size).round()).floor() * settings.tile_size;
-           // Rectangle::new(rand_col).draw([0.0,0.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform.trans(x,y), g);
+              rand_col[2] + gen.next_f32(),
+              rand_col[3] + gen.next_f32()];*/
+           // let x = (i % (settings.size_x / settings.tile_size).round()) * settings.tile_size;
+            //let y = (i / (settings.size_x / settings.tile_size).round()).floor() * settings.tile_size;
+            // Rectangle::new(rand_col).draw([0.0,0.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform.trans(x,y), g);
             //println!("Drawing{} at {}, {}", i,x,y);
             i += 1.0;
         }
+        i = 0.0;
+        while i < (settings.size_y / settings.tile_size).round(){
+            c_line.draw([0.0,i*settings.tile_size,settings.size_x,i*settings.tile_size],&c.draw_state,c.transform,g);
+        i+=1.0;
+        } 
+    let edLine = Line::new(settings.edge_color_board, settings.board_edge_radius);
+        edLine.draw([0.0,0.0,settings.size_x,0.0],&c.draw_state, c.transform, g);
+        edLine.draw([0.0,0.0,0.0,settings.size_y], &c.draw_state, c.transform,g);
+        edLine.draw([0.0,settings.size_y,settings.size_x,settings.size_y], &c.draw_state, c.transform, g);
+        edLine.draw([settings.size_x,settings.size_y,settings.size_x,0.0], &c.draw_state, c.transform, g);
         let mut y = 0;
         for (key, value) in &controller.arena.trails {
             if value.owner > 0 {
                 Rectangle::new(get_color(value.owner)).draw([value.position[0] * 15.0, value.position[1] * 15.0, settings.tile_size, settings.tile_size], &c.draw_state, c.transform, g);
             }
-            y +=1;
-        }
-       // println!("Total trails: {}", y);
-        for cy in &controller.arena.cycles {
-            let deg = match cy.dir {
-                3.0 => consts::PI /2.0,
-                2.0 => consts::PI / 1.0,
-                1.0 => consts:: PI * 1.5 ,
-                0.0 => consts::PI / 0.5,
-                _ => 0.0
-            };
-            let transf = c.transform.trans(cy.position[0], cy.position[1]).rot_rad(deg).trans(-7.5, -15.0);
-            Rectangle::new(get_color(cy.owner)).draw([0.0,0.0, 15.0, 30.0], &c.draw_state, transf, g);
 
-            Image::new().rect([0.0, 0.0, 15.0, 30.0]).draw(&self.textures[0], &c.draw_state,transf , g);
-          //  println!("{}", deg);
-            c.reset();
+        }
+        for cy in &controller.arena.cycles {
+            if cy.dead != true {
+                let deg = match cy.dir {
+                    3.0 => consts::PI /2.0,
+                    2.0 => consts::PI / 1.0,
+                    1.0 => consts:: PI * 1.5 ,
+                    0.0 => consts::PI / 0.5,
+                    _ => 0.0
+                };
+                let transf = c.transform.trans(cy.position[0], cy.position[1]).rot_rad(deg).trans(-7.5, -15.0);
+                Rectangle::new(get_color(cy.owner)).draw([0.0,0.0, 15.0, 30.0], &c.draw_state, transf, g);
+
+                Image::new().rect([0.0, 0.0, 15.0, 30.0]).draw(&self.textures[0], &c.draw_state,transf , g);
+                //  println!("{}", deg);
+                c.reset();
+            }
         }
     }
 }

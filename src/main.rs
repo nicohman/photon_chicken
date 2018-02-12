@@ -33,7 +33,7 @@ fn main() {
     arena_controller.arena.create_cycle([200.0, 200.0], arena_view.settings.lightcycle_color);    
     while let Some(e) = events.next(&mut window) {
 
-        arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));  
+        arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y)); 
         arena_controller.event(arena_view.settings.position, arena_view.settings.size, &e);
         if let Some(args) = e.render_args() {
             arena_view.settings.size_x = args.draw_width as f64;

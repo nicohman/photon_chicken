@@ -20,7 +20,6 @@ impl ArenaController {
         }
         if let Some(Keyboard(Key::Right)) = e.press_args() {
             arena.cycles[0].dir = 3.0;
-            println!("RIGHT");
         }
         if let Some(Keyboard(Key::Down)) = e.press_args() {
             arena.cycles[0].dir = 2.0;
@@ -33,7 +32,6 @@ impl ArenaController {
         }
         if let Some(Keyboard(Key::D)) = e.press_args() {
             arena.cycles[1].dir = 3.0;
-            println!("RIGHT");
         }
         if let Some(Keyboard(Key::S)) = e.press_args() {
             arena.cycles[1].dir = 2.0;
