@@ -126,7 +126,12 @@ impl ArenaView {
         h+= 1;
         }
         if controller.arena.paused {
+            if controller.arena.start_tick == -1.0 {
             Text::new_color(settings.edge_color_board, 200).draw("PAUSED", glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
+            } else {
+            Text::new_color(settings.edge_color_board, 200).draw(&controller.arena.start_tick.ceil().to_string(), glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
+            
+            }
         }
     }
 }

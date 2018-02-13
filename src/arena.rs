@@ -16,6 +16,7 @@ pub struct Lightcycle {
     pub trail:Vec<LightDrop>
 }
 pub struct Arena {
+    pub start_tick:f64,
     pub paused: bool,
     pub cycles:Vec<Lightcycle>,
     pub trails:HashMap<String, LightDrop>,
@@ -25,6 +26,7 @@ impl Arena {
         let mut a =  Arena {
             cycles: Vec::new(),
             paused: false,
+            start_tick:0.0,
             trails:HashMap::new(),
         };
         a
@@ -89,6 +91,7 @@ impl Arena {
         self.create_cycle([900.0, 100.0]);
         self.create_cycle([300.0, 100.0]);
         self.trails = HashMap::new();
+        self.start_tick = 3.0;
     }
     pub fn is_dead(cy: &Lightcycle, drop: &LightDrop) -> bool {
         let xd = match cy.dir {
@@ -123,7 +126,7 @@ impl Arena {
         }
         if (( (  (  ((drop.position[0] * 15.0) +15.0) > (cy.position[0])  ) && (  (drop.position[0] * 15.0) < (cy.position[0]+xd)  )  ) && (  (((drop.position[1] * 15.0 )+  15.0) > (cy.position[1] )  ) && (  (drop.position[1] * 15.0) < (cy.position[1] + yd)  )))) && ((cy.owner != drop.owner ) || ok) {
 
-            println!("{}x{},{}x{},{}x{}",last.position[0],last.position[1],drop.position[0],drop.position[1],cy.position[0] / 15.0,cy.position[1] / 15.0);
+            //println!("{}x{},{}x{},{}x{}",last.position[0],last.position[1],drop.position[0],drop.position[1],cy.position[0] / 15.0,cy.position[1] / 15.0);
             true
         } else {
             false

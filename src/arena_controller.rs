@@ -1,4 +1,4 @@
-use piston::input::GenericEvent;
+use piston::input::{GenericEvent, UpdateArgs};
 use Arena;
 pub struct ArenaController {
     pub arena: Arena,
@@ -48,11 +48,23 @@ impl ArenaController {
         if let Some(Keyboard(Key::Space)) = e.press_args() {
             arena.paused = !arena.paused;
         }
-
+        if let Some(UpdateArgs) = e.update_args() {
+                if arena.start_tick != -1.0 {
+                    arena.start_tick -= 4.0 * e.update_args().unwrap().dt;
+                } 
+        }
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
+
         self.multi = self.multi * 1.0001;
         let ref mut arena = self.arena;
+        if arena.start_tick != -1.0 {
+            arena.paused = true;
+            if arena.start_tick < 0.0 {
+                arena.paused = false;
+                arena.start_tick = -1.0;
+            }
+        } 
         for d in arena.move_cycles(sizes, self.multi) {
             self.deaths.push(d);
         }
