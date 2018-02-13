@@ -3,6 +3,7 @@ use Arena;
 pub struct ArenaController {
     pub arena: Arena,
     pub multi: f64,
+    pub score: Vec<i32>,
     pub deaths: Vec<i32>
 }
 impl ArenaController {
@@ -10,6 +11,7 @@ impl ArenaController {
         let mut c = ArenaController {
             arena: arena,
             multi:1.0,
+            score: vec![0,0,0,0],
             deaths:Vec::new(),
         };
         c
@@ -43,11 +45,13 @@ impl ArenaController {
         if let Some(Keyboard(Key::W)) = e.press_args() {
             arena.cycles[1].dir = 0.0;
         }
+        if let Some(Keyboard(Key::Space)) = e.press_args() {
+            arena.paused = true;
+        }
 
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
-        self.multi = self.multi * 1.0001;
-        println!("{}", self.multi);
+        self.multi = self.multi * 1.0005;
         let ref mut arena = self.arena;
         for d in arena.move_cycles(sizes, self.multi) {
             self.deaths.push(d);
@@ -55,7 +59,11 @@ impl ArenaController {
         for d in arena.check_deaths(){
             self.deaths.push(d);
         }
-        if arena.check_game() {
+        let check = arena.check_game();
+        if check != -1 {
+            if check  != -2 { 
+            self.score[(check -1) as usize] += 1;
+            }
             self.multi = 1.0;
         }
     }

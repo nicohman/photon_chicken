@@ -108,17 +108,22 @@ impl ArenaView {
                 };
                 let transf = c.transform.trans(cy.position[0], cy.position[1]).rot_rad(deg).trans(-7.5, -15.0);
                 Rectangle::new(get_color(cy.owner)).draw([0.0,0.0, 15.0, 30.0], &c.draw_state, transf, g);
-
                 Image::new().rect([0.0, 0.0, 15.0, 30.0]).draw(&self.textures[0], &c.draw_state,transf , g);
-                //  println!("{}", deg);
                 c.reset();
             }
         }
 
         if &controller.deaths.len() > &0 {
-            println!("RENDERING");
             let toDisp = &controller.deaths.pop().unwrap();
             Text::new_color(get_color(*toDisp), 50).draw("DEAD", glyphs, &c.draw_state, c.transform.trans(/*controller.arena.cycles[(*toDisp -1) as usize].position[0], controller.arena.cycles[(*toDisp-1) as usize].position[1]*/50.0, 50.0), g);
+        }
+        let mut h = 0;
+        while h < controller.score.len() {
+            if controller.score[h as usize] > 0 {
+                
+                Text::new_color(get_color((h+1) as i32), 50).draw(&(controller.score[h as usize].to_string()), glyphs, &c.draw_state, c.transform.trans(settings.size_x - ((4-h) as f64 *120.0), 50.0), g);
+            }
+        h+= 1;
         }
     }
 }
