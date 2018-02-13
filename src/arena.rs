@@ -1,7 +1,7 @@
 use graphics::types::Color;
 use std::collections::HashMap;
 const SIZE: f64 = 50.0;
-const SPEED: f64 = 2.0;
+const SPEED: f64 = 1.0;
 #[derive(Clone, Copy)]
 pub struct LightDrop {
     pub position: [f64;2],
@@ -105,7 +105,25 @@ impl Arena {
             0.0 => 30.0,
             _ => 30.0,
         } / 2.0;
-        if (( (  (  (drop.position[0] * 15.0 +xd ) > (cy.position[0])  ) && (  (drop.position[0] * 15.0) < (cy.position[0]+xd)  )  ) && (  ((drop.position[1] * 15.0 +  yd) > (cy.position[1] )  ) && (  (drop.position[1] * 15.0) < (cy.position[1] + yd)  )))) && cy.owner != drop.owner {
+        let last = cy.trail.first().unwrap();
+        let mut ok = true;
+        let mut t = 0;
+        let mut lim = 4;
+        if cy.trail.len() < 4 {
+            lim = cy.trail.len();
+        }
+        while t < lim {
+             if drop.position[0] == cy.trail[t].position[0] && drop.position[1] == cy.trail[t].position[1] 
+             {
+                ok = false   
+             } else {
+                 
+             }
+             t+=1;
+        }
+        if (( (  (  ((drop.position[0] * 15.0) +15.0) > (cy.position[0])  ) && (  (drop.position[0] * 15.0) < (cy.position[0]+xd)  )  ) && (  (((drop.position[1] * 15.0 )+  15.0) > (cy.position[1] )  ) && (  (drop.position[1] * 15.0) < (cy.position[1] + yd)  )))) && ((cy.owner != drop.owner ) || ok) {
+
+            println!("{}x{},{}x{},{}x{}",last.position[0],last.position[1],drop.position[0],drop.position[1],cy.position[0] / 15.0,cy.position[1] / 15.0);
             true
         } else {
             false

@@ -46,12 +46,12 @@ impl ArenaController {
             arena.cycles[1].dir = 0.0;
         }
         if let Some(Keyboard(Key::Space)) = e.press_args() {
-            arena.paused = true;
+            arena.paused = !arena.paused;
         }
 
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
-        self.multi = self.multi * 1.0005;
+        self.multi = self.multi * 1.0001;
         let ref mut arena = self.arena;
         for d in arena.move_cycles(sizes, self.multi) {
             self.deaths.push(d);
