@@ -11,6 +11,9 @@ use piston::input::{RenderEvent, PressEvent};
 use glutin_window::GlutinWindow;
 use opengl_graphics::{OpenGL, Filter, GlGraphics, GlyphCache, TextureSettings};
 pub use arena::Arena;
+pub use tower::Tower;
+pub use tower_controller::TowerController;
+pub use tower_view::{TowerView, TowerViewSet};
 pub use arena_controller::ArenaController;
 pub use arena_view::{ArenaView, ArenaViewSet};
 use menu::Menu;
@@ -20,6 +23,9 @@ mod arena;
 mod color_gen;
 mod arena_controller;
 mod menu;
+mod tower;
+mod tower_view;
+mod tower_controller;
 mod menu_view;
 mod menu_controller;
 mod arena_view;
@@ -37,6 +43,10 @@ fn main() {
     let mut arena_controller = ArenaController::new(arena);
     let mut arena_view_settings = ArenaViewSet::new();
     let mut arena_view = ArenaView::new(arena_view_settings);
+    let mut tower = Tower::new();
+    let mut tower_controller = TowerController::new(tower);
+    let mut tower_view_settings = TowerViewSet::new();
+    let mut tower_view = TowerView::new(tower_view_settings);
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
@@ -49,6 +59,11 @@ fn main() {
             "cycles" => {
                 arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));
                 arena_controller.event(arena_view.settings.position, arena_view.settings.size, &e);
+
+            },
+            "tower" => {
+                tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y));
+                tower_controller.event(tower_view.settings.position, tower_view.settings.size, &e);
 
             },
             _ => {
@@ -71,6 +86,10 @@ fn main() {
                     "cycles" => {
 
                         arena_view.draw(&mut arena_controller, glyphs, &c, g);
+                    },
+                    "tower" => {
+                        tower_view.draw(&mut tower_controller, glyphs, &c, g);
+
                     },
                     _ => {
 

@@ -9,7 +9,7 @@ pub struct Menu {
 impl Menu {
     pub fn new() -> Menu {
         Menu {
-            modes:vec![Mode {name:String::from("cycles")}, Mode {name:String::from("menu")}],
+            modes:vec![Mode {name:String::from("tower")},Mode {name:String::from("cycles")}, Mode {name:String::from("menu")}],
             selected: Mode {
                 name:String::from("menu")
             }

@@ -23,6 +23,14 @@ impl MenuController {
         
             self.menu.switch(Mode {name:String::from("cycles")});
         }
+        if let Some(Keyboard(Key::A)) = e.press_args() {
+            self.menu.switch(Mode {name:String::from("tower")});
+        
+        }
+        if let Some(Keyboard(Key::Left)) = e.press_args() {
+            self.menu.switch(Mode {name:String::from("tower")});
+        
+        }
     }
     pub fn update (&mut self) {
              
