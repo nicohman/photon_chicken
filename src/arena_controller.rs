@@ -21,37 +21,54 @@ impl ArenaController {
         use piston::input::Key;
         use piston::input::Button::Keyboard;
         let ref mut arena = self.arena;
-        if let Some(Keyboard(Key::Left)) = e.press_args() {
-            arena.cycles[0].dir = 1.0;
+        if let Some(Keyboard(Key::Left)) = e.press_args()   {
+            if arena.cycles[0].dir != 3.0{
+                arena.cycles[0].dir = 1.0;
+            }
         }
-        if let Some(Keyboard(Key::Right)) = e.press_args() {
-            arena.cycles[0].dir = 3.0;
+        if let Some(Keyboard(Key::Right)) = e.press_args()  {
+            if arena.cycles[0].dir != 1.0{
+                arena.cycles[0].dir = 3.0;
+            }
         }
         if let Some(Keyboard(Key::Down)) = e.press_args() {
-            arena.cycles[0].dir = 2.0;
+            if arena.cycles[0].dir != 0.0
+            {
+                arena.cycles[0].dir = 2.0;
+            }
         }
         if let Some(Keyboard(Key::Up)) = e.press_args() {
-            arena.cycles[0].dir = 0.0;
+            if arena.cycles[0].dir != 2.0{
+                arena.cycles[0].dir = 0.0;
+            }
         }
-        if let Some(Keyboard(Key::A)) = e.press_args() {
-            arena.cycles[1].dir = 1.0;
+        if let Some(Keyboard(Key::A)) = e.press_args()  {
+            if arena.cycles[1].dir != 3.0 {
+                arena.cycles[1].dir = 1.0;
+            }
         }
         if let Some(Keyboard(Key::D)) = e.press_args() {
-            arena.cycles[1].dir = 3.0;
+            if  arena.cycles[1].dir != 1.0 {
+                arena.cycles[1].dir = 3.0;
+            }
         }
         if let Some(Keyboard(Key::S)) = e.press_args() {
-            arena.cycles[1].dir = 2.0;
+            if arena.cycles[1].dir != 0.0 {
+                arena.cycles[1].dir = 2.0;
+            }
         }
         if let Some(Keyboard(Key::W)) = e.press_args() {
-            arena.cycles[1].dir = 0.0;
+            if arena.cycles[1].dir != 2.0 {
+                arena.cycles[1].dir = 0.0;
+            }
         }
         if let Some(Keyboard(Key::Space)) = e.press_args() {
             arena.paused = !arena.paused;
         }
         if let Some(UpdateArgs) = e.update_args() {
-                if arena.start_tick != -1.0 {
-                    arena.start_tick -= 4.0 * e.update_args().unwrap().dt;
-                } 
+            if arena.start_tick != -1.0 {
+                arena.start_tick -= 4.0 * e.update_args().unwrap().dt;
+            }
         }
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
@@ -64,7 +81,7 @@ impl ArenaController {
                 arena.paused = false;
                 arena.start_tick = -1.0;
             }
-        } 
+        }
         for d in arena.move_cycles(sizes, self.multi) {
             self.deaths.push(d);
         }
@@ -73,8 +90,8 @@ impl ArenaController {
         }
         let check = arena.check_game();
         if check != -1 {
-            if check  != -2 { 
-            self.score[(check -1) as usize] += 1;
+            if check  != -2 {
+                self.score[(check -1) as usize] += 1;
             }
             self.multi = 1.0;
         }

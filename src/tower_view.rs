@@ -16,6 +16,7 @@ pub struct TowerViewSet {
     pub size_x: f64,
     pub size_y: f64,
     pub size: f64,
+    pub user_color:Color,
     pub tile_size: f64,
     pub bg_color: Color,
     pub border_color: Color,
@@ -37,6 +38,7 @@ impl TowerViewSet {
             texture_settings: TextureSettings::new().filter(Filter::Nearest),
             bg_color: [0.8, 0.8, 1.0, 1.0],
             border_color: [0.0, 0.0, 0.2, 1.0],
+            user_color:[1.0, 0.0, 0.6, 1.0],
             edge_color_board: [0.0, 0.0, 0.6, 1.0],
             edge_color_tile: [0.0, 0.0, 0.4, 1.0],
             board_edge_radius: 3.0,
@@ -52,10 +54,32 @@ pub struct TowerView {
 impl TowerView {
     pub fn new(settings:TowerViewSet) -> TowerView {
         TowerView {
-            settings:settings,
-            textures:vec![],
+            textures:vec![Texture::from_path(Path::new("assets/tower.png"), &settings.texture_settings).unwrap()],
+            settings:settings,            
         }
     }
     pub fn draw<G: Graphics, C>(&self, controller:&mut TowerController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
+        use graphics::{Image, Line, Rectangle, Transformed, Text};
+
+        let ref settings = self.settings;
+        let mut i = 0.0;
+        let c_line = Line::new(settings.edge_color_tile, settings.tile_edge_radius);
+        while i < (settings.size_x / settings.tile_size).round()  {
+            c_line.draw([i*settings.tile_size,0.0,i*settings.tile_size,settings.size_y],&c.draw_state,c.transform,g);
+            i += 1.0;
+        }
+        i = 0.0;
+        while i < (settings.size_y / settings.tile_size).round(){
+            c_line.draw([0.0,i*settings.tile_size,settings.size_x,i*settings.tile_size],&c.draw_state,c.transform,g);
+            i+=1.0;
+        }
+        Image::new().rect([0.0,0.0,60.0,90.0]).draw(&self.textures[0],&c.draw_state,c.transform.trans(settings.size_x/2.0 - 30.0,settings.size_y/2.0 - 45.0),g);
+        let sp_rect = [0.0,0.0,30.0,30.0];
+        for sp in &controller.tower.spiders {
+            Rectangle::new(settings.edge_color_tile).draw(sp_rect,&c.draw_state,c.transform.trans(sp.position[0],sp.position[1]),g);
+        }
+        for u  in &controller.tower.users {
+            Rectangle::new(settings.user_color).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
+        }
     }
 }

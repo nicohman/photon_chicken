@@ -50,6 +50,7 @@ fn main() {
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
+    tower_controller.tower.reset();
     while let Some(e) = events.next(&mut window) {
         match menu_controller.menu.selected.name.as_ref() {
             "menu" => {
@@ -76,6 +77,8 @@ fn main() {
             arena_view.settings.size_y = args.draw_height as f64;
             menu_view.settings.size_x = args.draw_width as f64;
             menu_view.settings.size_y = args.draw_height as f64;
+            tower_view.settings.size_x = args.draw_width as f64;
+            tower_view.settings.size_y = args.draw_height as f64;
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
                 clear(arena_view.settings.border_color, g);
