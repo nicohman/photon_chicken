@@ -10,6 +10,7 @@ pub struct LightDrop {
 pub struct Lightcycle {
     pub position: [f64;2],
     pub dir:f64,
+    pub num: i32,
     pub dead: bool,
     pub owner: i32,
     pub trail:Vec<LightDrop>
@@ -42,6 +43,7 @@ impl Arena {
             dir:2.0,
             trail:Vec::new(),
             dead: false,
+num:50,
             owner: self.cycles.len() as i32 +1,
             position: pos
         };
@@ -75,6 +77,16 @@ impl Arena {
         if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() == 1 {
             let win = self.cycles.iter().filter(|x| !x.dead).next().unwrap().owner.to_owned();
             self.reset_game();
+            self.cycles[(win-1) as usize].num +=20;
+            for cy in &mut self.cycles {
+                if cy.owner != win && cy.num >= 50 {
+                    if cy.num <= 60 {
+                        cy.num = 50;
+                    } else {
+                        cy.num -=10;
+                    }
+                }
+            }
             win
         } else if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() < 1 {
             self.reset_game();
@@ -166,7 +178,7 @@ impl Arena {
                         let mut owner = cy.owner;
                         let mut last: [f64;2];
                         let name = pos[0].to_string()+"x"+&pos[1].to_string();
-                        if cy.trail.len() >= 50 {
+                        if cy.trail.len() >= cy.num as usize {
                             last = cy.trail.pop().unwrap().position;
                             self.trails.remove(&(last[0].to_string()+"x"+&last[1].to_string()));
                         }
