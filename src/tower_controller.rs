@@ -32,11 +32,12 @@ impl Keys {
 }
 impl TowerController {
     pub fn new (mut tower: Tower) -> TowerController {
-        TowerController {
+        let mut t = TowerController {
             tower:tower,
             keys: Keys::new(),
             score:vec![0,0,0,0]
-        }
+        };
+        t
     }
     pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, e: &E)
     {
@@ -67,7 +68,37 @@ impl TowerController {
         if let Some(Keyboard(Key::Down)) = e.release_args() {
             self.keys.down = false;
         }
+        if let Some(Keyboard(Key::W)) = e.press_args() {
+            self.keys.w =  true;
+        }
+        if let Some(Keyboard(Key::A)) = e.press_args() {
+            self.keys.a = true;
+        }
+        if let Some(Keyboard(Key::D)) = e.press_args() {
+            self.keys.d = true;
+        }
+        if let Some(Keyboard(Key::S)) = e.press_args() {
+            self.keys.s = true;
+        }
+        if let Some(Keyboard(Key::D)) = e.release_args() {
+            self.keys.d = false;
+        }
+        if let Some(Keyboard(Key::W)) = e.release_args() {
+            self.keys.w = false;
+        }
+        if let Some(Keyboard(Key::A)) = e.release_args() {
+            self.keys.a = false;
+        }
+        if let Some(Keyboard(Key::S)) = e.release_args() {
+            self.keys.s = false;
+        }
 
+        if let Some(UpdateArgs) = e.update_args() {
+            let dt = e.update_args().unwrap().dt;
+            for mut sp in &mut tower.spiders {
+                sp.drop(dt);
+            }
+        }
     }
 
     pub fn update(&mut self, sizes:(f64, f64)) {
@@ -98,9 +129,31 @@ impl TowerController {
         } else if self.keys.up {
             self.tower.users[0].facing = 0.0;
         }
+        if self.keys.a && self.keys.w {
+            self.tower.users[1].facing = 3.5;
+        } else if self.keys.a && self.keys.s {
+            self.tower.users[1].facing = 2.5;
+        } else if self.keys.a {
+            self.tower.users[1].facing = 3.0;
+        } else if self.keys.d && self.keys.w {
+            self.tower.users[1].facing = 0.5;
+        } else if self.keys.d && self.keys.s {
+            self.tower.users[1].facing = 1.5;
+        } else if self.keys.d {
+            self.tower.users[1].facing = 1.0;
+        } else if self.keys.s {
+            self.tower.users[1].facing = 2.0;
+        } else if self.keys.w {
+            self.tower.users[1].facing = 0.0;
+        }
+
         if self.keys.up  || self.keys.down || self.keys.right || self.keys.left {
             self.tower.move_u(0);
         }
+        if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
+            self.tower.move_u(1);
+        }
+
         self.tower.tick();
     }
 }

@@ -1,6 +1,6 @@
 const START: f64 = 8.0;
 const INIT: f64 = 0.25;
-const SPI_SPEED: f64 = 0.25;
+const SPI_SPEED: f64 = 0.5;
 const U_SPEED : f64 = 1.0;
 #[derive(Clone, Copy)]
 pub struct Spider {
@@ -20,8 +20,8 @@ pub struct Tower {
     pub paused: bool,
 }
 impl Spider {
-
-    pub fn rep(&mut self, mut spiders: &mut Vec<Spider>) {
+    pub fn drop(&mut self, dt:f64){
+        self.cooldown -=dt;
     }
 }
 impl Tower {
