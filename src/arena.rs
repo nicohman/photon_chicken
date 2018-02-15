@@ -1,4 +1,3 @@
-use graphics::types::Color;
 use std::collections::HashMap;
 const SIZE: f64 = 50.0;
 const SPEED: f64 = 1.0;

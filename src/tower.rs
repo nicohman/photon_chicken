@@ -1,6 +1,7 @@
 const START: f64 = 8.0;
 const INIT: f64 = 0.25;
 const SPI_SPEED: f64 = 0.25;
+const U_SPEED : f64 = 1.0;
 #[derive(Clone, Copy)]
 pub struct Spider {
     pub splitter: bool,
@@ -32,6 +33,21 @@ impl Tower {
             paused:false,
         }
     }
+    pub fn move_u(&mut self, u: i32){
+        let ref mut cur = self.users[u as usize];
+        println!("{}",cur.facing);
+        cur.position = match cur.facing {
+          0.0 => [cur.position[0], cur.position[1] - U_SPEED],   
+          0.5 => [cur.position[0] + U_SPEED, cur.position[1] - U_SPEED],
+          1.0 => [cur.position[0] + U_SPEED, cur.position[1]],
+          1.5 => [cur.position[0] + U_SPEED, cur.position[1] + U_SPEED],
+          2.0 => [cur.position[0], cur.position[1] + U_SPEED],
+          2.5 => [cur.position[0] - U_SPEED, cur.position[1] + U_SPEED],
+          3.0 => [cur.position[0] - U_SPEED, cur.position[1]],
+          3.5 => [cur.position[0] - U_SPEED, cur.position[1] - U_SPEED],
+          _ => cur.position
+        };
+    }
     pub fn tick(&mut self)  {
         //println!("ticking");
         let USER: [f64;2] = [30.0,60.0];
@@ -40,12 +56,13 @@ impl Tower {
         while i < self.spiders.len(){
             let mut cur = &mut self.spiders[i].clone();
             let pos = cur.position;
-            self.users.sort_by(|x,y|{
+            let mut cp = self.users.iter().collect::<Vec<&User>>();
+                cp.sort_by(|x,y|{
                 ((pos[0] - x.position[0]).powf(2.0) + (pos[1]-x.position[1]).powf(2.0)).sqrt().partial_cmp(&((pos[0] - y.position[0]).powf(2.0) + (pos[1]-y.position[1]).powf(2.0)).sqrt()).unwrap()
             });
 
 
-            let u_p = self.users[0].position;
+            let u_p = cp[0].position;
             if cur.cooldown <= 0.0  && cur.splitter{
                 self.spiders[i].cooldown = 5.0;
                 println!("Doubling");

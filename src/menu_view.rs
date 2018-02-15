@@ -5,9 +5,6 @@ use graphics;
 use opengl_graphics;
 use std::f64::consts;
 use rand::os::OsRng;
-use opengl_graphics::{Texture, TextureSettings, Filter};
-use std::path::Path;
-use rand::Rng;
 use color_gen::get_color;
 use MenuController;
 pub struct MenuViewSet {
