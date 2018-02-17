@@ -98,6 +98,9 @@ impl TowerController {
         if let Some(Keyboard(Key::RCtrl)) = e.press_args() {
             tower.shoot(0);
         }
+        if let Some(Keyboard(Key::P)) = e.press_args() {
+            tower.paused = !tower.paused;
+        }
         if let Some(UpdateArgs) = e.update_args() {
             let dt = e.update_args().unwrap().dt;
             for mut sp in &mut tower.spiders {
@@ -105,6 +108,9 @@ impl TowerController {
             }
             for mut u in &mut tower.users {
                 u.shot_cooldown -= dt;
+            }
+            if tower.start_tick != -1.0 {
+                tower.start_tick -= 4.0 * dt;
             }
         }
     }
@@ -143,14 +149,26 @@ impl TowerController {
         } else if self.keys.w {
             self.tower.users[1].facing = 0.0;
         }
-
-        if self.keys.up  || self.keys.down || self.keys.right || self.keys.left {
-            self.tower.move_u(0, [sizes.0,sizes.1]);
+        if self.tower.start_tick != -1.0 {
+            self.tower.paused = true;
+            if self.tower.start_tick < 0.0 {
+                self.tower.paused = false;
+                self.tower.start_tick = -1.0;
+            }
         }
-        if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
-            self.tower.move_u(1, [sizes.0,sizes.1]);
+        if !self.tower.paused {
+            if self.keys.up  || self.keys.down || self.keys.right || self.keys.left {
+                self.tower.move_u(0, [sizes.0,sizes.1]);
+            }
+            if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
+                self.tower.move_u(1, [sizes.0,sizes.1]);
+            }
+            self.tower.tick();
+            let victory = self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
+            if victory != -1 {
+                self.tower.reset();
+                self.score[victory as usize] += 1;
+            }
         }
-        self.tower.tick();
-        self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
     }
 }

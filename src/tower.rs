@@ -21,6 +21,7 @@ pub struct Shot {
 
 pub struct User {
     pub position: [f64;2],
+    pub id: i32,
     pub facing: f64,
     pub shot_cooldown: f64,
 }
@@ -172,7 +173,7 @@ impl Tower {
     }
 
     pub fn reset (&mut self) {
-        self.users = vec![User {position:[400.0,400.0],facing:1.0,shot_cooldown:0.0}, User{position:[500.0,500.0],facing:1.0,shot_cooldown:0.0}];
+        self.users = vec![User {position:[400.0,400.0],facing:1.0,id:0,shot_cooldown:0.0}, User{position:[500.0,500.0],id:1,facing:1.0,shot_cooldown:0.0}];
         self.spiders = Vec::new();
         let mut i = 0.0;
         while i< START {
@@ -188,12 +189,14 @@ impl Tower {
         self.start_tick = 3.0;
         self.paused = true;
     }
-    pub fn check_win(&mut self, sizes: [f64;2]){
+    pub fn check_win(&mut self, sizes: [f64;2]) -> i32{
         for u in &self.users {
             if u.position[0] + 30.0 > sizes[0] && u.position[0] < sizes[0]+60.0 && u.position[1] + 60.0 > sizes[1] && u.position[1] < sizes[1] + 90.0 {
                 println!("Victory achieved");
+                return u.id;
             }
         }
+        -1
     }
 }
 

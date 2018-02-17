@@ -59,11 +59,11 @@ impl TowerView {
     pub fn new(settings:TowerViewSet) -> TowerView {
         TowerView {
             textures:vec![Texture::from_path(Path::new("assets/tower.png"), &settings.texture_settings).unwrap()],
-            settings:settings,            
+            settings:settings,
         }
     }
     pub fn draw<G: Graphics, C>(&self, controller:&mut TowerController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
-use std::f64::consts::PI;        
+        use std::f64::consts::PI;
         use graphics::{Image, Line, Rectangle, Transformed, Text, CircleArc, ellipse};
 
         let ref settings = self.settings;
@@ -86,17 +86,34 @@ use std::f64::consts::PI;
             let mut rand_y = 0.75 * gen.next_f64();
             if rand_x % 0.2 != 0.0 {
                 rand_x *= -1.0;
-            } 
+            }
             if rand_y % 0.2 != 0.0 {
                 rand_y *= -1.0;
             }
             Rectangle::new(settings.edge_color_tile).draw(sp_rect,&c.draw_state,c.transform.trans(sp.position[0] + rand_x ,sp.position[1] + rand_y),g);
         }
         for u  in &controller.tower.users {
-            Rectangle::new(settings.user_color).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
+            Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
         }
         for s in &controller.tower.shots {
             ellipse::Ellipse::new(settings.shot_color).draw([0.0,0.0,15.0,15.0], &c.draw_state, c.transform.trans(s.position[0],s.position[1]),g);
+        }
+        if controller.tower.paused {
+            if controller.tower.start_tick == -1.0 {
+                Text::new_color(settings.edge_color_board, 200).draw("PAUSED", glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
+            } else {
+                Text::new_color(settings.edge_color_board, 200).draw(&controller.tower.start_tick.ceil().to_string(), glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
+
+            }
+        }
+        let mut h = 0;
+        while h < controller.score.len() {
+            if controller.score[h as usize] > 0 {
+
+                Text::new_color(get_color((h) as i32), 50).draw(&(controller.score[h as usize].to_string()), glyphs, &c.draw_state, c.transform.trans(settings.size_x - ((4-h) as f64 *120.0), 50.0), g);
+            }
+            h+= 1;
+
         }
     }
 }

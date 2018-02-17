@@ -62,7 +62,7 @@ impl ArenaController {
                 arena.cycles[1].dir = 0.0;
             }
         }
-        if let Some(Keyboard(Key::Space)) = e.press_args() {
+        if let Some(Keyboard(Key::P)) = e.press_args() {
             arena.paused = !arena.paused;
         }
         if let Some(UpdateArgs) = e.update_args() {
