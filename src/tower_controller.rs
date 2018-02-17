@@ -92,26 +92,23 @@ impl TowerController {
         if let Some(Keyboard(Key::S)) = e.release_args() {
             self.keys.s = false;
         }
-
+        if let Some(Keyboard(Key::E)) = e.press_args() {
+            tower.shoot(1);
+        }
+        if let Some(Keyboard(Key::RCtrl)) = e.press_args() {
+            tower.shoot(0);
+        }
         if let Some(UpdateArgs) = e.update_args() {
             let dt = e.update_args().unwrap().dt;
             for mut sp in &mut tower.spiders {
                 sp.drop(dt);
             }
+            for mut u in &mut tower.users {
+                u.shot_cooldown -= dt;
+            }
         }
     }
-
     pub fn update(&mut self, sizes:(f64, f64)) {
-        /*let mut i : usize= 0;
-          while i  < spiders.len() {
-          let mut cur = &mut spiders[i];
-          let pos = cur.position;
-          self.tower.users.sort_by(|x,y|{
-          ((pos[0] - x.position[0]).powf(2.0) + (pos[1]-x.position[1]).powf(2.0)).sqrt().partial_cmp(&((pos[0] - y.position[0]).powf(2.0) + (pos[1]-y.position[1]).powf(2.0)).sqrt()).unwrap()
-          });
-          cur.tick(self.tower.users[0].position, spiders);
-          i+=1;
-          }*/
         if self.keys.left && self.keys.up {
             self.tower.users[0].facing = 3.5;
         } else if self.keys.left && self.keys.down {
@@ -148,12 +145,12 @@ impl TowerController {
         }
 
         if self.keys.up  || self.keys.down || self.keys.right || self.keys.left {
-            self.tower.move_u(0);
+            self.tower.move_u(0, [sizes.0,sizes.1]);
         }
         if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
-            self.tower.move_u(1);
+            self.tower.move_u(1, [sizes.0,sizes.1]);
         }
-
         self.tower.tick();
+        self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
     }
 }

@@ -1,4 +1,4 @@
-
+#![allow(warnings)]
 
 extern crate piston;
 extern crate glutin_window;

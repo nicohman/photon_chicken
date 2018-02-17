@@ -68,24 +68,15 @@ impl MenuView {
         Text::new_color(settings.edge_color_board, 400).draw("PHOTONCHICKEN", glyphs,&c.draw_state,c.transform,g);
         let mut i =1.0;
         let chLine = Line::new(settings.edge_color_choice, settings.edge_choice_radius);
-        /*for mode in &controller.menu.modes {
-            if !(&mode.name == "menu"){
-            let x = settings.size_x / 2.0 - (settings.choice_size *( mode.name.chars().count()as f64) / 2.0);
-            let y = settings.tile_size * 6.0 * i + (settings.size_y /2.5);
-            Text::new_color(settings.edge_color_board, settings.choice_size as u32).draw(&mode.name, glyphs,&c.draw_state, c.transform.trans(x,y,), g);
-            let y1 = y + settings.size_y / 50.0;
-            let x2 = x+(settings.choice_size*(mode.name.chars().count() as f64));
-            let y2 = y-settings.choice_size ;
-            chLine.draw([x,y1,x2, y1], &c.draw_state, c.transform, g);
-            chLine.draw([x,y1,x,y2],&c.draw_state,c.transform,g);
-            chLine.draw([x2,y1,x2,y2], &c.draw_state, c.transform, g);
-            chLine.draw([x,y2,x2,y2], &c.draw_state,c.transform,g);
-            i+=1.0;
-        }*/
         chLine.draw([0.0,0.0,settings.size_x,settings.size_y], &c.draw_state, c.transform, g);
         chLine.draw([0.0,settings.size_y,settings.size_x,0.0],&c.draw_state,c.transform,g);
-        //chLine.draw([settings.size_x/2.0,0.0,settings.size_x/2.0,settings.size_y],&c.draw_state,c.transform,g);
         CircleArc::new(settings.edge_color_choice, settings.circle_radius, 0.0, PI*1.9999).draw([(settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0+settings.size_x/4.0),(settings.size_x/16.0+settings.size_x/4.0)],&c.draw_state,c.transform.trans(settings.size_x/2.0 - ((settings.size_x/16.0 - settings.size_x/8.0)/2.0),settings.size_y/2.0 - ((settings.size_x/15.0-settings.size_x/8.0)/2.0)),g);
-        //}
+    let mut i = 0.0;
+    /*while i< 4 {
+        
+
+        i+= 1.0;
+    }*/
+    
     }
 }
