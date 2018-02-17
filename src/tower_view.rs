@@ -53,6 +53,7 @@ impl TowerViewSet {
 }
 pub struct TowerView {
     pub settings:TowerViewSet,
+    pub done_first:bool,
     pub textures:Vec<Texture>
 }
 impl TowerView {
@@ -60,13 +61,18 @@ impl TowerView {
         TowerView {
             textures:vec![Texture::from_path(Path::new("assets/tower.png"), &settings.texture_settings).unwrap()],
             settings:settings,
+            done_first:false,
         }
     }
-    pub fn draw<G: Graphics, C>(&self, controller:&mut TowerController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
+    pub fn draw<G: Graphics, C>(&mut self, controller:&mut TowerController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
         use std::f64::consts::PI;
         use graphics::{Image, Line, Rectangle, Transformed, Text, CircleArc, ellipse};
 
         let ref settings = self.settings;
+        if !self.done_first {
+            controller.tower.reset([settings.size_x,settings.size_y]);
+            self.done_first = true;
+        }
         let mut i = 0.0;
         let c_line = Line::new(settings.edge_color_tile, settings.tile_edge_radius);
         while i < (settings.size_x / settings.tile_size).round()  {
@@ -93,7 +99,9 @@ impl TowerView {
             Rectangle::new(settings.edge_color_tile).draw(sp_rect,&c.draw_state,c.transform.trans(sp.position[0] + rand_x ,sp.position[1] + rand_y),g);
         }
         for u  in &controller.tower.users {
+            if !u.dead{
             Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
+            }
         }
         for s in &controller.tower.shots {
             ellipse::Ellipse::new(settings.shot_color).draw([0.0,0.0,15.0,15.0], &c.draw_state, c.transform.trans(s.position[0],s.position[1]),g);

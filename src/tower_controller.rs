@@ -112,6 +112,7 @@ impl TowerController {
             if tower.start_tick != -1.0 {
                 tower.start_tick -= 4.0 * dt;
             }
+            tower.tick_time += dt;
         }
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
@@ -165,9 +166,11 @@ impl TowerController {
             }
             self.tower.tick();
             let victory = self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
-            if victory != -1 {
-                self.tower.reset();
+            if victory != -1 && victory != -2{
+                self.tower.reset([sizes.0,sizes.1]);
                 self.score[victory as usize] += 1;
+            } else if victory == -2 {
+                self.tower.reset([sizes.0,sizes.1]);
             }
         }
     }
