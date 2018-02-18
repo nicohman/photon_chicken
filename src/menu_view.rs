@@ -137,32 +137,22 @@ impl MenuView {
            };*/
         let mut x  = 0;
         let dir = 0.5;
-        while x < self.msets[0].pixels.len() {
-            let mut y = 0;
-            while y < self.msets[0].pixels[x].len() {
-                let mut color = &settings.close_color;
-                if self.msets[0].pixels[x][y] > 75 {
-        //let pRect = [x as f64, y as f64, (x+1) as f64, (y+1) as f64];
-        let pRect = graphics::rectangle::square(0.0,0.0,1.0);
-                    Rectangle::new(*color).draw(pRect, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0).rot_rad((controller.menu.act_point-0.5) * PI).trans((x as f64)  - settings.size_x/8.0, (y as f64 - settings.size_y/2.0) as f64), g);
-                    
+        if controller.mandle {
+            while x < self.msets[0].pixels.len() {
+                let mut y = 0;
+                while y < self.msets[0].pixels[x].len() {
+                    let mut color = &settings.close_color;
+                    if self.msets[0].pixels[x][y] > 75 {
+                        //let pRect = [x as f64, y as f64, (x+1) as f64, (y+1) as f64];
+                        let pRect = graphics::rectangle::square(0.0,0.0,1.0);
+                        Rectangle::new(*color).draw(pRect, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0).rot_rad((controller.menu.act_point-0.5) * PI).trans((x as f64)  - settings.size_x/8.0, (y as f64 - settings.size_y/2.0) as f64), g);
+
+                    }
+
+                    y+=1;
                 }
-
-                y+=1;
+                x+=1;
             }
-            x+=1;
-        }
-
-        if controller.menu.to_point !=-1.0{
-        if controller.menu.to_point +0.05 > controller.menu.act_point && controller.menu.to_point < controller.menu.act_point + 0.05 {
-            let cp = controller.menu.to_point.clone();
-            controller.menu.run(cp);
-        }
-        if controller.menu.to_point < controller.menu.act_point {
-            controller.menu.act_point  = controller.menu.act_point - 0.05;
-        } else {
-            controller.menu.act_point = controller.menu.act_point + 0.05;
-        }
         }
         edLine.draw([0.0,0.0,20.0,20.0],&c.draw_state,c.transform,g);
 
