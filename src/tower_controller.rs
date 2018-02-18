@@ -1,6 +1,8 @@
 use piston::input::{GenericEvent, UpdateArgs};
 use Tower;
 use std::num;
+use MenuController;
+use menu::Mode;
 pub struct TowerController {
     pub tower: Tower,
     pub keys: Keys,
@@ -39,7 +41,7 @@ impl TowerController {
         };
         t
     }
-    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, e: &E)
+    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, menu: &mut MenuController, e: &E)
     {
         use piston::input::Key;
         use piston::input::Button::Keyboard;
@@ -100,6 +102,9 @@ impl TowerController {
         }
         if let Some(Keyboard(Key::P)) = e.press_args() {
             tower.paused = !tower.paused;
+        }
+        if let Some(Keyboard(Key::Backspace)) = e.press_args() {
+            menu.menu.switch(Mode {name:String::from("menu")});
         }
         if let Some(UpdateArgs) = e.update_args() {
             let dt = e.update_args().unwrap().dt;

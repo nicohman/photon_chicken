@@ -59,12 +59,12 @@ fn main() {
             },
             "cycles" => {
                 arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));
-                arena_controller.event(arena_view.settings.position, arena_view.settings.size, &e);
+                arena_controller.event(arena_view.settings.position, arena_view.settings.size, &mut menu_controller, &e);
 
             },
             "tower" => {
                 tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y));
-                tower_controller.event(tower_view.settings.position, tower_view.settings.size, &e);
+                tower_controller.event(tower_view.settings.position, tower_view.settings.size, &mut menu_controller, &e);
 
             },
             _ => {

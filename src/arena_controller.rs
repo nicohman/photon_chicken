@@ -1,5 +1,7 @@
 use piston::input::{GenericEvent, UpdateArgs};
 use Arena;
+use MenuController;
+use menu::Mode;
 pub struct ArenaController {
     pub arena: Arena,
     pub multi: f64,
@@ -16,7 +18,7 @@ impl ArenaController {
         };
         c
     }
-    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, e: &E)
+    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, menu: &mut MenuController, e: &E)
     {
         use piston::input::Key;
         use piston::input::Button::Keyboard;
@@ -64,6 +66,9 @@ impl ArenaController {
         }
         if let Some(Keyboard(Key::P)) = e.press_args() {
             arena.paused = !arena.paused;
+        }
+        if let Some(Keyboard(Key::Backspace)) = e.press_args() {
+            menu.menu.switch(Mode {name:String::from("menu")});
         }
         if let Some(UpdateArgs) = e.update_args() {
             if arena.start_tick != -1.0 {

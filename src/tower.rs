@@ -143,8 +143,8 @@ impl Tower {
                 } else if cur.split_an > 0.0 && cur.splitting {
 
                 } else {
-                    let rand_x = 0.1 * gen.next_f64();
-                    let rand_y = 0.1* gen.next_f64();
+                    let rand_x = 0.3 * gen.next_f64();
+                    let rand_y = 0.3* gen.next_f64();
 
                     let mut to = self.spiders[i].position.clone();
 
