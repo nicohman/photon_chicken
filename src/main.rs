@@ -95,7 +95,6 @@ fn main() {
 
                     },
                     _ => {
-
                         menu_view.draw(&mut menu_controller, glyphs, &c, g);
                     }
                 }

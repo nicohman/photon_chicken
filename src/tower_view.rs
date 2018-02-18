@@ -59,7 +59,7 @@ pub struct TowerView {
 impl TowerView {
     pub fn new(settings:TowerViewSet) -> TowerView {
         TowerView {
-            textures:vec![Texture::from_path(Path::new("assets/tower.png"), &settings.texture_settings).unwrap()],
+            textures:vec![Texture::from_path(Path::new("assets/tower.png"), &settings.texture_settings).unwrap(), Texture::from_path(Path::new("assets/spieder.png"), &settings.texture_settings).unwrap()],
             settings:settings,
             done_first:false,
         }
@@ -96,7 +96,7 @@ impl TowerView {
             if rand_y % 0.2 != 0.0 {
                 rand_y *= -1.0;
             }
-            Rectangle::new(settings.edge_color_tile).draw(sp_rect,&c.draw_state,c.transform.trans(sp.position[0] + rand_x ,sp.position[1] + rand_y),g);
+            Image::new().rect(sp_rect).draw(&self.textures[1],&c.draw_state,c.transform.trans(sp.position[0] + rand_x ,sp.position[1] + rand_y),g);
         }
         for u  in &controller.tower.users {
             if !u.dead{
