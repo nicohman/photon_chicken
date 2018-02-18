@@ -104,6 +104,9 @@ impl TowerController {
             tower.paused = !tower.paused;
         }
         if let Some(Keyboard(Key::Backspace)) = e.press_args() {
+            menu.menu.act_point = 0.5;
+            menu.menu.to_point = -1.0;
+
             menu.menu.switch(Mode {name:String::from("menu")});
         }
         if let Some(UpdateArgs) = e.update_args() {
