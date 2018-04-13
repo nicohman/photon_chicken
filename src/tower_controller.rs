@@ -6,6 +6,7 @@ use menu::Mode;
 pub struct TowerController {
     pub tower: Tower,
     pub keys: Keys,
+            pub cursor_pos: [f64;2],
     pub score:Vec<i32>
 }
 pub struct Keys {
@@ -37,6 +38,7 @@ impl TowerController {
         let mut t = TowerController {
             tower:tower,
             keys: Keys::new(),
+            cursor_pos:[0.0;2],
             score:vec![0,0,0,0]
         };
         t
@@ -45,7 +47,12 @@ impl TowerController {
     {
         use piston::input::Key;
         use piston::input::Button::Keyboard;
+        use piston::input::mouse::MouseButton;
+        use piston::input::Button;
         let ref mut tower = self.tower;
+        if let Some(pos) = e.mouse_cursor_args() {
+            self.cursor_pos = pos;
+        }
         if let Some(Keyboard(Key::Left)) = e.press_args() {
             self.keys.left = true;
         }
@@ -97,6 +104,13 @@ impl TowerController {
         if let Some(Keyboard(Key::E)) = e.press_args() {
             tower.shoot(1);
         }
+        if let Some(Button::Mouse(MouseButton::Left)) = e.press_args() {
+            println!("Mouse");
+            let ref ca = self.cursor_pos;
+            let ref cy = tower.users[0].position;
+            let r = (ca[1] / (   (   (ca[0]-cy[0]).powi(2)+(ca[1]-cy[1]).powi(2)  ).sqrt()   )   ).asin();
+            println!("HERE:{}",r);
+        }
         if let Some(Keyboard(Key::RCtrl)) = e.press_args() {
             tower.shoot(0);
         }
@@ -108,6 +122,9 @@ impl TowerController {
             menu.menu.to_point = -1.0;
 
             menu.menu.switch(Mode {name:String::from("menu")});
+        }
+        if let Some(Keyboard(Key::Space)) = e.press_args() {
+            tower.paused = !tower.paused;
         }
         if let Some(UpdateArgs) = e.update_args() {
             let dt = e.update_args().unwrap().dt;

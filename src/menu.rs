@@ -23,7 +23,7 @@ impl Menu {
         match dir {
             0.0 => println!("Tanks not done yet!"),
             0.5 => self.switch(Mode {name:String::from("cycles")}),
-            1.0 => println!("Breakout not done yet!"),
+            1.0 => self.switch(Mode {name:String::from("bricks")}),
             1.5 => self.switch(Mode {name:String::from("tower")}),
             _ => println!("WTF")
         }

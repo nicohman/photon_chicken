@@ -19,6 +19,9 @@ pub use arena_view::{ArenaView, ArenaViewSet};
 use menu::Menu;
 use menu_controller::MenuController;
 use menu_view::{MenuView, MenuViewSet};
+use bricks::Bricks;
+use bricks_controller::BricksController;
+use bricks_view::{BricksView, BricksViewSet};
 mod arena;
 mod color_gen;
 mod arena_controller;
@@ -29,9 +32,12 @@ mod tower_controller;
 mod menu_view;
 mod menu_controller;
 mod arena_view;
+mod bricks;
+mod bricks_controller;
+mod bricks_view;
 fn main() {
     let opengl = OpenGL::V3_2;
-    let settings = WindowSettings::new("PC", [512;2]).opengl(opengl).fullscreen(true).exit_on_esc(false);
+    let settings = WindowSettings::new("PC", [512;2]).opengl(opengl).fullscreen(true).exit_on_esc(false).srgb(false);
     let mut window : GlutinWindow = settings.build().expect("Couldn't create window");
     let mut events = Events::new(EventSettings::new());
     let mut gl = GlGraphics::new(opengl);
@@ -47,10 +53,15 @@ fn main() {
     let mut tower_controller = TowerController::new(tower);
     let mut tower_view_settings = TowerViewSet::new();
     let mut tower_view = TowerView::new(tower_view_settings);
+    let mut bricks = Bricks::new();
+    let mut bricks_controller = BricksController::new(bricks);
+    let mut bricks_view_settings = BricksViewSet::new();
+    let mut bricks_view = BricksView::new(bricks_view_settings);
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
     tower_controller.tower.reset([tower_view.settings.size_x,tower_view.settings.size_y]);
+    bricks_controller.bricks.reset([bricks_view.settings.size_x, bricks_view.settings.size_y]);
     while let Some(e) = events.next(&mut window) {
         match menu_controller.menu.selected.name.as_ref() {
             "menu" => {
@@ -62,6 +73,10 @@ fn main() {
                 arena_controller.event(arena_view.settings.position, arena_view.settings.size, &mut menu_controller, &e);
 
             },
+            "bricks" => {
+                bricks_controller.update((bricks_view.settings.size_x, bricks_view.settings.size_y));
+                bricks_controller.event(bricks_view.settings.position, bricks_view.settings.size, &mut menu_controller, &e);
+            }
             "tower" => {
                 tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y));
                 tower_controller.event(tower_view.settings.position, tower_view.settings.size, &mut menu_controller, &e);
@@ -79,6 +94,8 @@ fn main() {
             menu_view.settings.size_y = args.draw_height as f64;
             tower_view.settings.size_x = args.draw_width as f64;
             tower_view.settings.size_y = args.draw_height as f64;
+            bricks_view.settings.size_x = args.draw_width as f64;
+            bricks_view.settings.size_y = args.draw_height as f64;
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
                 clear(arena_view.settings.border_color, g);
@@ -93,6 +110,9 @@ fn main() {
                     "tower" => {
                         tower_view.draw(&mut tower_controller, glyphs, &c, g);
 
+                    },
+                    "bricks" => {
+                        bricks_view.draw(&mut bricks_controller, glyphs, &c, g);
                     },
                     _ => {
                         menu_view.draw(&mut menu_controller, glyphs, &c, g);
