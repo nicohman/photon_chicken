@@ -22,6 +22,7 @@ pub struct BricksViewSet {
     pub edge_color_tile: Color,
     pub board_edge_radius: f64,
     pub brick_color: Color,
+    pub shot_color : Color,
     pub tile_edge_radius: f64,
     pub texture_settings: TextureSettings,
     pub text_color: Color,
@@ -39,6 +40,7 @@ impl BricksViewSet {
             border_color: [0.0, 0.0, 0.2, 1.0],
             edge_color_board: [0.0, 0.0, 0.6, 1.0],
             edge_color_tile: [0.0, 0.0, 0.4, 1.0],
+            shot_color: [1.0, 0.0, 0.4, 1.0],
             brick_color : [0.0,0.7,0.6,0.2],
             board_edge_radius: 3.0,
             tile_edge_radius: 1.0,
@@ -58,7 +60,7 @@ impl BricksView {
         }
     }
     pub fn draw<G: Graphics, C>(&self, controller:&mut BricksController, glyphs: &mut C, c: &Context, g: &mut G) where C: CharacterCache<Texture = G::Texture>, G: Graphics<Texture = opengl_graphics::Texture> {
-        use graphics::{Image, Line, Rectangle, Transformed, Text};
+        use graphics::{Image, Line, Rectangle, Transformed, Text, ellipse};
         use std::f64::consts::PI;
 
         let ref settings = self.settings;
@@ -87,18 +89,17 @@ impl BricksView {
         edLine.draw([ settings.size_x - (settings.size_x / 2.5) , settings.size_y / 3.0,settings.size_x, settings.size_y / 3.0], &c.draw_state, c.transform, g);
         edLine.draw([ settings.size_x - (settings.size_x / 2.5), settings.size_y / 3.0 * 2.0, settings.size_x, settings.size_y / 3.0 * 2.0], &c.draw_state, c.transform, g);
         edLine.draw([settings.size_x / 2.5, 0.0, settings.size_x / 2.5, settings.size_y / 3.0], &c.draw_state, c.transform, g);
-        edLine.draw([settings.size_x - (settings.size_x / 2.5), 0.0, settings.size_x - (settings.size_x / 2.5), settings.size_y / 3.0], &c.draw_state, c.transform, g);  
+        edLine.draw([settings.size_x - (settings.size_x / 2.5), 0.0, settings.size_x - (settings.size_x / 2.5), settings.size_y / 3.0], &c.draw_state, c.transform, g);
         edLine.draw([settings.size_x / 2.5, settings.size_y, settings.size_x / 2.5, settings.size_y / 3.0 * 2.0], &c.draw_state, c.transform, g);
         edLine.draw([settings.size_x - (settings.size_x / 2.5), settings.size_y, settings.size_x - (settings.size_x / 2.5), settings.size_y / 3.0 * 2.0], &c.draw_state, c.transform, g);
         let ref bricks = controller.bricks;
-        println!("{}", bricks.walls.len());
         for wall in bricks.walls.iter() {
-            println!("WALLX:{},WALLY:{}",wall.position[0],wall.position[1]);
             for brick in wall.bricks.iter() {
-                let bx =brick.position[0] * 12.0 - 10.0;
-                let by = brick.position[1] * 12.0 - 10.0;
-                println!("BX:{}BY:{}",bx,by);
-                Rectangle::new(settings.brick_color).draw([0.0,0.0,10.0,10.0], &c.draw_state, c.transform.trans(wall.position[0],wall.position[1]).rot_rad(PI * wall.dir).trans(bx,by), g);
+                if !brick.dead {
+                    let bx =brick.position[0] * 12.0 - 10.0;
+                    let by = brick.position[1] * 12.0 - 10.0;
+                    Rectangle::new(settings.brick_color).draw([0.0,0.0,10.0,10.0], &c.draw_state, c.transform.trans(wall.position[0],wall.position[1]).rot_rad(PI * wall.dir).trans(bx,by), g);
+                }
             }
 
         }
@@ -107,5 +108,9 @@ impl BricksView {
                 Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
             }
         }
+        for s in &controller.bricks.shots {
+            ellipse::Ellipse::new(settings.shot_color).draw([0.0,0.0,15.0,15.0], &c.draw_state, c.transform.trans(s.position[0],s.position[1]),g);
+        }
+
     }
 }

@@ -70,6 +70,13 @@ impl BricksController {
         }
         if let Some(Keyboard(Key::Down)) = e.release_args() {
             self.keys.down = false;
+
+        }
+        if let Some(Keyboard(Key::Backspace)) = e.press_args() {
+            menu.menu.act_point = 0.5;
+            menu.menu.to_point = -1.0;
+
+            menu.menu.switch(Mode {name:String::from("menu")});
         }
         if let Some(Keyboard(Key::W)) = e.press_args() {
             self.keys.w =  true;
@@ -147,12 +154,12 @@ impl BricksController {
                 self.bricks.move_u(1, [sizes.0,sizes.1]);
             }
             /*let victory = self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
-            if victory != -1 && victory != -2{
-                self.tower.reset([sizes.0,sizes.1]);
-                self.score[victory as usize] += 1;
-            } else if victory == -2 {
-                self.tower.reset([sizes.0,sizes.1]);
-            }*/
+              if victory != -1 && victory != -2{
+              self.tower.reset([sizes.0,sizes.1]);
+              self.score[victory as usize] += 1;
+              } else if victory == -2 {
+              self.tower.reset([sizes.0,sizes.1]);
+              }*/
         }
     }
 

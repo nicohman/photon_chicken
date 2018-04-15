@@ -1,5 +1,5 @@
 const PLAYERS: i32 = 4;
-const SHOT_SPEED : f64 =  1.5;
+const SHOT_SPEED : f64 =  15.0;
 const U_SPEED : f64 = 1.0;
 pub struct Player {
     pub position: [f64;2],
@@ -12,6 +12,13 @@ pub struct Wall {
     pub position:[f64;2],
     pub dir: f64,
     pub bricks: Vec<Brick>,
+}
+fn collidesWith(pos1 : [f64;2], pos2:[f64;2], sz1:[f64;2], sz2:[f64;2])  -> bool{
+    if pos1[0] + sz1[0] > pos2[0] && pos1[0] < pos2[0] + sz2[0] && pos2[1] + sz2[1] > pos1[1] && pos1[1] + sz1[1] > pos2[1] {
+        true
+    } else {
+        false
+    }
 }
 impl Wall {
     pub fn new(id: f64, sx: &f64, sy: &f64) -> Wall {
@@ -27,7 +34,8 @@ impl Wall {
         let mut bricks = Vec::new();
         while i < 60 {
             bricks.push(Brick {
-                position: [(i as f64 / 15.0).floor(), (i % 15) as f64]
+                position: [(i as f64 / 15.0).floor(), (i % 15) as f64],
+                dead:false
             });
             i+= 1;
         }
@@ -41,6 +49,7 @@ impl Wall {
 }
 pub struct Brick {
     pub position:[f64;2],
+    pub dead: bool,
 }
 pub struct Pickup {
     pub position:[f64;2],
@@ -81,6 +90,7 @@ impl Bricks {
         }
     }
     pub fn shoot(&mut self, u: i32) {
+        println!("Shoot");
         let ref mut cur = self.users[u as usize];
         if cur.shot_cooldown <= 0.0 {
             self.shots.push(Shot {
@@ -94,7 +104,6 @@ impl Bricks {
     }
     pub fn move_u(&mut self, u: i32, sizes:[f64;2]){
         let ref mut cur = self.users[u as usize];
-        println!("{}",cur.facing);
         let to_move = match cur.facing {
             0.0 => [cur.position[0], cur.position[1] - U_SPEED],
             0.5 => [cur.position[0] + U_SPEED, cur.position[1] - U_SPEED],
@@ -113,35 +122,55 @@ impl Bricks {
         }
     }
     pub fn tick(&mut self, dt: f64) {
+        use graphics::math::translate;
+        use graphics::Transformed;
         let ref mut walls = self.walls;
         for wall in walls.iter_mut() {
             for brick in wall.bricks.iter_mut() {
+                if !brick.dead {
+                for mut shot in &mut self.shots {
+                            let bx =(brick.position[0] * 12.0 - 10.0);
+                let by = (brick.position[1] * 12.0 - 10.0);
+                    let both = translate([0.0,0.0]).trans(wall.position[0], wall.position[1]).rot_rad(::std::f64::consts::PI * wall.dir).trans(bx, by);
+                    //println!("{:?}", both);
+
+                    if collidesWith(shot.position, [both[0][2],both[1][2]], [15.0, 15.0], [10.0,10.0]) {
+                     
+                        println!("Collide with brick!");
+                        brick.dead = true;
+                    }
+                }
                 if brick.position[1] > 15.0 {
                     brick.position[1] = 0.0;
                 } else {
                     brick.position[1] += 3.0 * dt;
                 }
             }
+            }
         }
+        let mv = SHOT_SPEED * dt * 10.0;
         for mut cur in &mut self.shots {
             cur.position = match cur.dir {
-                0.0 => [cur.position[0], cur.position[1] - SHOT_SPEED],
-                0.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] - SHOT_SPEED],
-                1.0 => [cur.position[0] + SHOT_SPEED, cur.position[1]],
-                1.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-                2.0 => [cur.position[0], cur.position[1] + SHOT_SPEED],
-                2.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-                3.0 => [cur.position[0] - SHOT_SPEED, cur.position[1]],
-                3.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] - SHOT_SPEED],
+                0.0 => [cur.position[0], cur.position[1] - mv],
+                0.5 => [cur.position[0] + mv, cur.position[1] - mv],
+                1.0 => [cur.position[0] + mv, cur.position[1]],
+                1.5 => [cur.position[0] + mv, cur.position[1] + mv],
+                2.0 => [cur.position[0], cur.position[1] + mv],
+                2.5 => [cur.position[0] - mv, cur.position[1] + mv],
+                3.0 => [cur.position[0] - mv, cur.position[1]],
+                3.5 => [cur.position[0] - mv, cur.position[1] - mv],
                 _ => cur.position
             };
 
+        }
+        for mut u in &mut self.users {
+            u.shot_cooldown-=  dt;
         }
     }
     pub fn reset (&mut self, sizes:[f64;2]){
         let ref sx = sizes[0];
         let ref sy = sizes[1];
-        self.users = vec![Player::new([sx-60.0,sy-60.0], 0), Player::new([60.0;2], 1)];
+        self.users = vec![Player::new([sx/2.0,60.0], 0), Player::new([sx - 60.0, sy/2.0], 1)];
         let mut i = 0;
         while i < PLAYERS {
             self.walls.push(Wall::new(i as f64, sx, sy));
