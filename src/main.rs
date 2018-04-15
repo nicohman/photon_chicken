@@ -58,10 +58,10 @@ fn main() {
     let mut bricks_view_settings = BricksViewSet::new();
     let mut bricks_view = BricksView::new(bricks_view_settings);
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
+    let mut fwalls = false;
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
     tower_controller.tower.reset([tower_view.settings.size_x,tower_view.settings.size_y]);
-    bricks_controller.bricks.reset([bricks_view.settings.size_x, bricks_view.settings.size_y]);
     while let Some(e) = events.next(&mut window) {
         match menu_controller.menu.selected.name.as_ref() {
             "menu" => {
@@ -96,6 +96,11 @@ fn main() {
             tower_view.settings.size_y = args.draw_height as f64;
             bricks_view.settings.size_x = args.draw_width as f64;
             bricks_view.settings.size_y = args.draw_height as f64;
+            if !fwalls {
+
+    bricks_controller.bricks.reset([bricks_view.settings.size_x, bricks_view.settings.size_y]);
+                fwalls = true;
+            }
             gl.draw(args.viewport(), |c, g| {
                 use graphics::{clear};
                 clear(arena_view.settings.border_color, g);

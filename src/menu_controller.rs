@@ -37,6 +37,12 @@ impl MenuController {
             //self.menu.switch(Mode {name:String::from("tower")});
         
         }
+        if let Some(Keyboard(Key::Down)) = e.press_args() {
+            self.menu.to_point = 1.0;
+        }
+        if let Some(Keyboard(Key::S)) = e.press_args() {
+            self.menu.to_point = 1.0;
+        }
         if let Some(Keyboard(Key::M)) = e.press_args() {
             self.mandle = !self.mandle;
         }
