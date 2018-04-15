@@ -57,7 +57,8 @@ pub struct Pickup {
 #[derive(Clone, Copy)]
 pub struct Shot {
     pub position: [f64;2],
-    pub dir: f64
+    pub dir: f64,
+    pub owner: i32,
 }
 pub struct Bricks {
     pub paused: bool,
@@ -90,16 +91,15 @@ impl Bricks {
         }
     }
     pub fn shoot(&mut self, u: i32) {
-        println!("Shoot");
         let ref mut cur = self.users[u as usize];
         if cur.shot_cooldown <= 0.0 {
             self.shots.push(Shot {
                 position:[cur.position[0]+15.0,cur.position[1]+30.0],
-                dir:cur.facing
+                dir:cur.facing,
+                owner: u,
             });
 
-            println!("Shot!{}", cur.facing);
-            cur.shot_cooldown = 0.5;
+            cur.shot_cooldown = 0.3;
         }
     }
     pub fn move_u(&mut self, u: i32, sizes:[f64;2]){
@@ -128,24 +128,51 @@ impl Bricks {
         for wall in walls.iter_mut() {
             for brick in wall.bricks.iter_mut() {
                 if !brick.dead {
-                for mut shot in &mut self.shots {
-                            let bx =(brick.position[0] * 12.0 - 10.0);
-                let by = (brick.position[1] * 12.0 - 10.0);
+                    let mut i = 0;
+                    let mut isdead = false;
+                    let mut bx =(brick.position[0] * 12.0 - 10.0);
+                    let mut by = (brick.position[1] * 12.0 - 10.0);
                     let both = translate([0.0,0.0]).trans(wall.position[0], wall.position[1]).rot_rad(::std::f64::consts::PI * wall.dir).trans(bx, by);
-                    //println!("{:?}", both);
-
-                    if collidesWith(shot.position, [both[0][2],both[1][2]], [15.0, 15.0], [10.0,10.0]) {
-                     
-                        println!("Collide with brick!");
-                        brick.dead = true;
+                    bx = both[0][2];
+                    by = both[1][2];
+                    while i < self.shots.len() {
+                        if collidesWith(self.shots[i].position, [bx,by], [15.0, 15.0], [10.0,10.0]) {
+                            println!("Collide with brick!");
+                            brick.dead = true;
+                            self.shots.remove(i);
+                            isdead = true;
+                        }
+                        i+=1;
+                    }
+                    if brick.position[1] > 15.0 {
+                        brick.position[1] = 0.0;
+                    } else {
+                        brick.position[1] += 3.0 * dt;
+                    }
+                    if !isdead {
+                        for mut user in &mut self.users {
+                            if collidesWith(user.position, [bx,by], [30.0,60.0], [10.0,10.0]) {
+                                println!("Collide with user!");
+                                brick.dead = true;
+                                user.dead = true;
+                                isdead = true;
+                            }
+                        }
                     }
                 }
-                if brick.position[1] > 15.0 {
-                    brick.position[1] = 0.0;
-                } else {
-                    brick.position[1] += 3.0 * dt;
-                }
             }
+        }
+        for mut user in &mut self.users {
+            let mut i = 0;
+            while i < self.shots.len() {
+                if collidesWith(self.shots[i].position, user.position, [10.0,10.0],[30.0,60.0]) {
+                    if self.shots[i].owner != user.id{
+                    println!("Collide with shot!");
+                    user.dead = true;
+                    self.shots.remove(i);
+                    }
+                }
+                i += 1;
             }
         }
         let mv = SHOT_SPEED * dt * 10.0;
@@ -167,11 +194,25 @@ impl Bricks {
             u.shot_cooldown-=  dt;
         }
     }
+
+    pub fn check_win(&mut self, sizes: [f64;2]) -> i32{
+        let alive = self.users.iter().filter(|x| {!x.dead}).collect::<Vec<&Player>>();
+        let num = alive.len();
+        if num == 0 {
+            println!("Tie achieved!");
+            return -2;
+        } else if num == 1 {
+            println!("Victory!");
+            return alive[0].id;
+        }
+        return -1;
+    }
     pub fn reset (&mut self, sizes:[f64;2]){
         let ref sx = sizes[0];
         let ref sy = sizes[1];
         self.users = vec![Player::new([sx/2.0,60.0], 0), Player::new([sx - 60.0, sy/2.0], 1)];
         let mut i = 0;
+        self.walls = Vec::new();
         while i < PLAYERS {
             self.walls.push(Wall::new(i as f64, sx, sy));
             i += 1;

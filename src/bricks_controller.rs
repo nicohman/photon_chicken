@@ -153,13 +153,13 @@ impl BricksController {
             if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
                 self.bricks.move_u(1, [sizes.0,sizes.1]);
             }
-            /*let victory = self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
+            let victory = self.bricks.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
               if victory != -1 && victory != -2{
-              self.tower.reset([sizes.0,sizes.1]);
+              self.bricks.reset([sizes.0,sizes.1]);
               self.score[victory as usize] += 1;
               } else if victory == -2 {
-              self.tower.reset([sizes.0,sizes.1]);
-              }*/
+              self.bricks.reset([sizes.0,sizes.1]);
+              }
         }
     }
 
