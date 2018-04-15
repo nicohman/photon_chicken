@@ -17,6 +17,7 @@ pub struct BricksViewSet {
     pub size_y : f64,
     pub tile_size: f64,
     pub bg_color: Color,
+    pub pickup_color: Color,
     pub border_color: Color,
     pub edge_color_board: Color,
     pub edge_color_tile: Color,
@@ -35,6 +36,7 @@ impl BricksViewSet {
             size_x:400.0,
             size_y:400.0,
             tile_size: 15.0,
+            pickup_color: [0.2,0.3,0.3,1.0],
             texture_settings: TextureSettings::new().filter(Filter::Nearest),
             bg_color: [0.8, 0.8, 1.0, 1.0],
             border_color: [0.0, 0.0, 0.2, 1.0],
@@ -108,9 +110,28 @@ impl BricksView {
                 Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
             }
         }
+        for pickup in &controller.bricks.pickups {
+            Rectangle::new(settings.pickup_color).draw([0.0,0.0,20.0,20.0], &c.draw_state, c.transform.trans(pickup.position[0], pickup.position[1]), g);
+        }
         for s in &controller.bricks.shots {
             ellipse::Ellipse::new(settings.shot_color).draw([0.0,0.0,15.0,15.0], &c.draw_state, c.transform.trans(s.position[0],s.position[1]),g);
         }
+        if controller.bricks.paused {
+            if controller.bricks.start_tick == -1.0 {
+                Text::new_color(settings.edge_color_board, 200).draw("PAUSED", glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
+            } else {
+                Text::new_color(settings.edge_color_board, 200).draw(&controller.bricks.start_tick.ceil().to_string(), glyphs, &c.draw_state, c.transform.trans(settings.size_x/2.0,settings.size_y/2.0 + 100.0), g);
 
+            }
+        }
+        let mut h = 0;
+        while h < controller.score.len() {
+            if controller.score[h as usize] > 0 {
+
+                Text::new_color(get_color((h) as i32), 50).draw(&(controller.score[h as usize].to_string()), glyphs, &c.draw_state, c.transform.trans(settings.size_x - ((4-h) as f64 *120.0), 50.0), g);
+            }
+            h+= 1;
+
+        }
     }
 }

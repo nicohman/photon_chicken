@@ -1,6 +1,7 @@
 const PLAYERS: i32 = 4;
 const SHOT_SPEED : f64 =  15.0;
 const U_SPEED : f64 = 1.0;
+const PICKUP_SIZE : f64 = 20.0;
 pub struct Player {
     pub position: [f64;2],
     pub id : i32,
@@ -55,6 +56,13 @@ pub struct Brick {
 pub struct Pickup {
     pub position:[f64;2],
 }
+impl Pickup {
+    pub fn new (s: [f64;2]) -> Pickup {
+        Pickup {
+            position:[s[0]/ 2.0 - PICKUP_SIZE, s[1] / 2.0 - PICKUP_SIZE] 
+        }
+    }
+}
 #[derive(Clone, Copy)]
 pub struct Shot {
     pub position: [f64;2],
@@ -67,7 +75,8 @@ pub struct Bricks {
     pub tick_time: f64,
     pub shots: Vec<Shot>,
     pub users : Vec<Player>,
-    pub walls: Vec<Wall>
+    pub walls: Vec<Wall>,
+    pub pickups: Vec<Pickup>
 }
 impl Player {
     pub fn new (pos: [f64;2], id:i32) -> Player {
@@ -89,6 +98,7 @@ impl Bricks {
             tick_time:0.0,
             users:Vec::new(),
             shots:Vec::new(),
+            pickups:Vec::new(),
             walls:Vec::new(),
         }
     }
@@ -178,6 +188,18 @@ impl Bricks {
                 }
                 i += 1;
             }
+
+            user.shot_cooldown-=  dt;
+            let mut h = 0;
+            while h < self.pickups.len() {
+                if collidesWith(self.pickups[h].position, user.position, [PICKUP_SIZE;2], [30.0, 60.0]){
+                    println!("Got a pickup!");
+                    user.shot_time = 0.1;
+                    self.pickups.remove(h);
+                }
+                h += 1;    
+            }
+        
         }
         let mv = SHOT_SPEED * dt * 10.0;
         for mut cur in &mut self.shots {
@@ -193,9 +215,6 @@ impl Bricks {
                 _ => cur.position
             };
 
-        }
-        for mut u in &mut self.users {
-            u.shot_cooldown-=  dt;
         }
     }
 
@@ -221,6 +240,9 @@ impl Bricks {
             self.walls.push(Wall::new(i as f64, sx, sy));
             i += 1;
         }
-
+        self.pickups = vec![Pickup::new(sizes)];
+                self.start_tick = 3.0;
+        self.paused = true;
+        self.tick_time = 0.0;
     }
 }
