@@ -7,6 +7,7 @@ pub struct Player {
     pub facing: f64,
     pub dead :bool,
     pub shot_cooldown: f64,
+    pub shot_time: f64,
 }
 pub struct Wall {
     pub position:[f64;2],
@@ -76,6 +77,7 @@ impl Player {
             id:id,
             shot_cooldown:0.0,
             dead:false,
+            shot_time: 0.3,
         }
     }
 }
@@ -99,7 +101,7 @@ impl Bricks {
                 owner: u,
             });
 
-            cur.shot_cooldown = 0.3;
+            cur.shot_cooldown = cur.shot_time;
         }
     }
     pub fn move_u(&mut self, u: i32, sizes:[f64;2]){
@@ -116,7 +118,9 @@ impl Bricks {
             _ => cur.position
         };
         if to_move[0] >= 0.0 && to_move[0] +30.0< sizes[0]  && to_move[1] >= 0.0 && to_move[1] +60.0< sizes[1] {
+            if ((to_move[0]+30.0 < (sizes[0] - (sizes[0] / 2.5))) && (to_move[0] > sizes[0] / 2.5)) || ((to_move[1] > sizes[1] /3.0 ) && (to_move[1]+60.0 < sizes[1] / 3.0 * 2.0)){
             cur.position = to_move;
+            }
         } else {
 
         }
