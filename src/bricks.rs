@@ -2,6 +2,9 @@ const PLAYERS: i32 = 4;
 const SHOT_SPEED : f64 =  15.0;
 const U_SPEED : f64 = 1.0;
 const PICKUP_SIZE : f64 = 20.0;
+const U_SIZE : [f64;2] = [30.0,30.0];
+const WALL_SIZE : f64 = 20.0;
+const BRICK_COUNT : f64 = 80.0;
 pub struct Player {
     pub position: [f64;2],
     pub id : i32,
@@ -25,7 +28,7 @@ fn collidesWith(pos1 : [f64;2], pos2:[f64;2], sz1:[f64;2], sz2:[f64;2])  -> bool
 impl Wall {
     pub fn new(id: f64, sx: &f64, sy: &f64) -> Wall {
         let mut i = 0;
-        let mut pos = /*[((sx / 2.0) - (sx / 2.0) * ((id % 2.0)-2.0)), sy / 2.0 * (id % 2.0) * (id - (1.0 - (id % 3.0))) ];*/ match id {
+        let mut pos = match id {
             0.0 => [*sx / 2.0 +10.0 * 15.0 /2.0, sy / 4.0],
             1.0 => [*sx * 0.75, *sy / 2.0 + 10.0 * 15.0 / 2.0],
             2.0 => [*sx / 2.0 - 10.0 * 15.0 / 2.0, *sy * 0.75],
@@ -34,9 +37,9 @@ impl Wall {
             _ => [0.0,0.0]
         };
         let mut bricks = Vec::new();
-        while i < 60 {
+        while i < BRICK_COUNT as i32 {
             bricks.push(Brick {
-                position: [(i as f64 / 15.0).floor(), (i % 15) as f64],
+                position: [(i as f64 / WALL_SIZE).floor(), (i % WALL_SIZE as i32) as f64],
                 dead:false
             });
             i+= 1;
@@ -106,7 +109,7 @@ impl Bricks {
         let ref mut cur = self.users[u as usize];
         if cur.shot_cooldown <= 0.0 {
             self.shots.push(Shot {
-                position:[cur.position[0]+15.0,cur.position[1]+30.0],
+                position:[cur.position[0]+U_SIZE[0]/2.0,cur.position[1]+U_SIZE[1]/2.0],
                 dir:cur.facing,
                 owner: u,
             });
@@ -127,8 +130,8 @@ impl Bricks {
             3.5 => [cur.position[0] - U_SPEED, cur.position[1] - U_SPEED],
             _ => cur.position
         };
-        if to_move[0] >= 0.0 && to_move[0] +30.0< sizes[0]  && to_move[1] >= 0.0 && to_move[1] +60.0< sizes[1] {
-            if ((to_move[0]+30.0 < (sizes[0] - (sizes[0] / 2.5))) && (to_move[0] > sizes[0] / 2.5)) || ((to_move[1] > sizes[1] /3.0 ) && (to_move[1]+60.0 < sizes[1] / 3.0 * 2.0)){
+        if to_move[0] >= 0.0 && to_move[0] + U_SIZE[0]< sizes[0]  && to_move[1] >= 0.0 && to_move[1] +U_SIZE[1]< sizes[1] {
+            if ((to_move[0]+U_SIZE[0] < (sizes[0] - (sizes[0] / 2.5))) && (to_move[0] > sizes[0] / 2.5)) || ((to_move[1] > sizes[1] /3.0 ) && (to_move[1]+U_SIZE[1]< sizes[1] / 3.0 * 2.0)){
             cur.position = to_move;
             }
         } else {
@@ -158,14 +161,14 @@ impl Bricks {
                         }
                         i+=1;
                     }
-                    if brick.position[1] > 15.0 {
+                    if brick.position[1] > WALL_SIZE {
                         brick.position[1] = 0.0;
                     } else {
                         brick.position[1] += 3.0 * dt;
                     }
                     if !isdead {
                         for mut user in &mut self.users {
-                            if collidesWith(user.position, [bx,by], [30.0,60.0], [10.0,10.0]) {
+                            if collidesWith(user.position, [bx,by], U_SIZE, [10.0,10.0]) {
                                 println!("Collide with user!");
                                 brick.dead = true;
                                 user.dead = true;
@@ -179,7 +182,7 @@ impl Bricks {
         for mut user in &mut self.users {
             let mut i = 0;
             while i < self.shots.len() {
-                if collidesWith(self.shots[i].position, user.position, [10.0,10.0],[30.0,60.0]) {
+                if collidesWith(self.shots[i].position, user.position, [10.0,10.0],U_SIZE) {
                     if self.shots[i].owner != user.id{
                     println!("Collide with shot!");
                     user.dead = true;
@@ -192,7 +195,7 @@ impl Bricks {
             user.shot_cooldown-=  dt;
             let mut h = 0;
             while h < self.pickups.len() {
-                if collidesWith(self.pickups[h].position, user.position, [PICKUP_SIZE;2], [30.0, 60.0]){
+                if collidesWith(self.pickups[h].position, user.position, [PICKUP_SIZE;2], U_SIZE){
                     println!("Got a pickup!");
                     user.shot_time = 0.1;
                     self.pickups.remove(h);

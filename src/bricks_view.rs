@@ -107,7 +107,7 @@ impl BricksView {
         }
         for u  in &controller.bricks.users {
             if !u.dead{
-                Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
+                Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,30.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
             }
         }
         for pickup in &controller.bricks.pickups {

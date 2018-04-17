@@ -179,8 +179,9 @@ impl BricksController {
         }
         let mut f = 0;
         while f < self.bricks.users.len() {
+let id = self.bricks.users[f].id.clone();
+
             if self.bricks.users[f].shot_time != 0.3 {
-                let id = self.bricks.users[f].id.clone();
                 if !self.picked[id as usize]  {
                     self.picked[id as usize] = true;
                 }
@@ -190,6 +191,10 @@ impl BricksController {
                         _ => false,
                 } {
                     self.bricks.shoot(id);
+                }
+            } else {
+                if self.picked[id as usize] {
+                    self.picked[id as usize] = false;
                 }
             }
             f += 1;
