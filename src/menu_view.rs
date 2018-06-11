@@ -3,6 +3,7 @@ use graphics::character::CharacterCache;
 use graphics::{Context, Graphics};
 use graphics;
 use opengl_graphics;
+use opengl_graphics::{Texture,Filter,TextureSettings};
 use std::f64::consts;
 use rand::os::OsRng;
 use color_gen::get_color;
@@ -48,6 +49,7 @@ pub struct MenuViewSet {
     pub size: f64,
     pub circle_radius:f64,
     pub position: [f64;2],
+    pub texture_settings: TextureSettings,    
     pub edge_color_board:Color,
     pub edge_color_tile: Color,
     pub tile_edge_radius: f64,
@@ -81,7 +83,8 @@ impl MenuViewSet {
             cycle_color:[0.0, 1.0, 1.8, 1.0],
             close_color: [0.0, 0.0, 1.2, 1.0],
             not_color:[0.0, 0.0, 0.6, 1.0],
-            tower_color: [0.0, 0.6, 0.2, 1.0]
+            tower_color: [0.0, 0.6, 0.2, 1.0],
+            texture_settings: TextureSettings::new().filter(Filter::Nearest)            
         }
     }
 }
@@ -91,10 +94,13 @@ pub struct MenuView {
     pub drawn_b4: bool,
     pub act_point:f64,
     pub to_point: f64,
+    pub textures:Vec<Texture>
 }
 impl MenuView {
     pub fn new(settings:MenuViewSet) -> MenuView {
         MenuView {
+
+            textures:vec![Texture::from_path("assets/logo.png", &settings.texture_settings).unwrap()],
             settings:settings,
             msets:Vec::new(),
             drawn_b4: false,
@@ -121,6 +127,7 @@ impl MenuView {
             c_line.draw([0.0,t*settings.tile_size,settings.size_x,t*settings.tile_size],&c.draw_state,c.transform,g);
             t+=1.0;
         }
+        Image::new().rect([0.0,0.0,320.0,320.0]).draw(&self.textures[0],&c.draw_state,c.transform.trans((settings.size_x/2.0)-160.0,((settings.size_y/3.0)*2.0)),g);
         let edLine = Line::new(settings.edge_color_board, settings.board_edge_radius);
         let mut rs = vec![0.0 * PI, 0.5 * PI, 1.0 * PI, 1.5 * PI];
         let mut i = 0.0;
@@ -165,8 +172,8 @@ impl MenuView {
         edLine.draw([settings.size_x,settings.size_y,settings.size_x,0.0], &c.draw_state, c.transform, g);
         let mut i =1.0;
         let chLine = Line::new(settings.edge_color_choice, settings.edge_choice_radius);
-        chLine.draw([0.0,0.0,settings.size_x,settings.size_y], &c.draw_state, c.transform, g);
-        chLine.draw([0.0,settings.size_y,settings.size_x,0.0],&c.draw_state,c.transform,g);
-        CircleArc::new(settings.edge_color_choice, settings.circle_radius, 0.0, PI*1.9999).draw([(settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0+settings.size_x/4.0),(settings.size_x/16.0+settings.size_x/4.0)],&c.draw_state,c.transform.trans(settings.size_x/2.0 - ((settings.size_x/16.0 - settings.size_x/8.0)/2.0),settings.size_y/2.0 - ((settings.size_x/15.0-settings.size_x/8.0)/2.0)),g);
+        chLine.draw([settings.size_x/2.0,0.0,settings.size_x,settings.size_y], &c.draw_state, c.transform, g);
+        chLine.draw([settings.size_x/2.0,0.0,0.0,settings.size_y],&c.draw_state,c.transform,g);
+        //CircleArc::new(settings.edge_color_choice, settings.circle_radius, 0.0, PI*1.9999).draw([(settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0 - settings.size_x/4.0), (settings.size_x/16.0+settings.size_x/4.0),(settings.size_x/16.0+settings.size_x/4.0)],&c.draw_state,c.transform.trans(settings.size_x/2.0 - ((settings.size_x/16.0 - settings.size_x/8.0)/2.0),settings.size_y/2.0 - ((settings.size_x/15.0-settings.size_x/8.0)/2.0)),g);
     }
 }
