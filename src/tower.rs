@@ -83,8 +83,8 @@ impl Tower {
         }
     }
     pub fn tick(&mut self)  {
-        let mut SPI_SPEED = 0.1;
-        SPI_SPEED *= self.tick_time / 2.5;
+        let mut SPI_SPEED = 0.25;
+        SPI_SPEED *= self.tick_time / 2.0;
         let mut gen = OsRng::new().unwrap();
         let USER: [f64;2] = [30.0,60.0];
         let SPIDER : [f64;2] = [30.0,30.0];
@@ -119,7 +119,7 @@ impl Tower {
                 }
                 if cur.cooldown <= 0.0  && cur.splitter{
                     self.spiders[i].cooldown = 8.0;
-                    self.spiders[i].split_an = 3.0;
+                    self.spiders[i].split_an = 2.0;
                     self.spiders[i].splitting = true;
                     self.spiders[i].splitter = false;
 
@@ -205,6 +205,7 @@ impl Tower {
     pub fn reset (&mut self, sizes:[f64;2]) {
         self.users = vec![User {position:[sizes[0]-60.0,sizes[1]-60.0],facing:1.0,id:0,shot_cooldown:0.0,dead:false}, User{position:[60.0,60.0],dead:false,id:1,facing:1.0,shot_cooldown:0.0}];
         self.spiders = Vec::new();
+        self.shots = Vec::new();
         let mut i = 0.0;
         while i< START {
             let mut x = sizes[0] /2.0 - 120.0;

@@ -3,8 +3,8 @@ const SHOT_SPEED : f64 =  15.0;
 const U_SPEED : f64 = 1.0;
 const PICKUP_SIZE : f64 = 20.0;
 const U_SIZE : [f64;2] = [30.0,30.0];
-const WALL_SIZE : f64 = 20.0;
-const BRICK_COUNT : f64 = 80.0;
+const WALL_SIZE : f64 = 22.0;
+const BRICK_COUNT : f64 = 66.0;
 pub struct Player {
     pub position: [f64;2],
     pub id : i32,
@@ -29,10 +29,10 @@ impl Wall {
     pub fn new(id: f64, sx: &f64, sy: &f64) -> Wall {
         let mut i = 0;
         let mut pos = match id {
-            0.0 => [*sx / 2.0 +10.0 * 15.0 /2.0 + WALL_SIZE * 4.0, sy / 4.0],
-            1.0 => [*sx * 0.75, *sy / 2.0 + 10.0 * 15.0 / 2.0],
-            2.0 => [*sx / 2.0 - 10.0 * 15.0 / 2.0, *sy * 0.75],
-            3.0 => [sx / 4.0, *sy / 2.0 - 10.0 * 15.0 / 2.0],
+            0.0 => [*sx / 2.0 +10.0 * 15.0 /2.0 + WALL_SIZE * 1.9, sy / 4.0],
+            1.0 => [*sx * 0.75, *sy / 2.0 + 10.0 * 15.0 / 2.0 + WALL_SIZE * 1.9],
+            2.0 => [*sx / 2.0 - 10.0 * 15.0 / 2.0 - WALL_SIZE * 1.9, *sy * 0.75],
+            3.0 => [sx / 4.0, *sy / 2.0 - 10.0 * 15.0 / 2.0 - WALL_SIZE * 1.9],
             4.0 => [0.0,0.0],
             _ => [0.0,0.0]
         };
@@ -239,6 +239,7 @@ impl Bricks {
         self.users = vec![Player::new([sx/2.0,60.0], 0), Player::new([sx - 60.0, sy/2.0], 1)];
         let mut i = 0;
         self.walls = Vec::new();
+        self.shots = Vec::new();
         while i < PLAYERS {
             self.walls.push(Wall::new(i as f64, sx, sy));
             i += 1;

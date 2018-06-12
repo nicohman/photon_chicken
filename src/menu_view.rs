@@ -133,15 +133,7 @@ impl MenuView {
         let mut i = 0.0;
         let dxs = [0.0,0.0,settings.size_x/2.0,0.0];
         let dys = [0.0,0.0,0.0,settings.size_y/2.0];
-        /* while i < 4.0 {
-           println!("Drawing {}",i);
-           let toU = match i {
-           0.0 => 1,
-           1.0 => 0,
-           2.0 => 1,
-           3.0 => 0,
-           _ => 0,
-           };*/
+
         let mut x  = 0;
         let dir = 0.5;
         if controller.mandle {
@@ -161,7 +153,6 @@ impl MenuView {
                 x+=1;
             }
         }
-        edLine.draw([0.0,0.0,20.0,20.0],&c.draw_state,c.transform,g);
 
         i+=1.0;
         //}
