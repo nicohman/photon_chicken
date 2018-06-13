@@ -1,10 +1,11 @@
 #![allow(warnings)]
-
+extern crate gilrs;
 extern crate piston;
 extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate rand;
+pub use gilrs::Gilrs;
 use piston::window::WindowSettings;
 use piston::event_loop::{Events, EventLoop, EventSettings};
 use piston::input::{RenderEvent, PressEvent};
@@ -59,6 +60,7 @@ fn main() {
     let mut bricks_view = BricksView::new(bricks_view_settings);
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let mut fwalls = false;
+    let mut gilrs = Gilrs::new().unwrap();
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
     tower_controller.tower.reset([tower_view.settings.size_x,tower_view.settings.size_y]);
@@ -70,7 +72,7 @@ fn main() {
             },
             "cycles" => {
                 arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));
-                arena_controller.event(arena_view.settings.position, arena_view.settings.size, &mut menu_controller, &e);
+                arena_controller.event(arena_view.settings.position, arena_view.settings.size, &mut gilrs,&mut menu_controller, &e);
 
             },
             "bricks" => {

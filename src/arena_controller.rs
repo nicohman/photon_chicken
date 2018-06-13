@@ -1,12 +1,15 @@
+use gilrs;
+use gilrs::{Gilrs, Button, Event};
 use piston::input::{GenericEvent, UpdateArgs};
 use Arena;
 use MenuController;
+
 use menu::Mode;
 pub struct ArenaController {
     pub arena: Arena,
     pub multi: f64,
     pub score: Vec<i32>,
-    pub deaths: Vec<i32>
+    pub deaths: Vec<i32>,
 }
 impl ArenaController {
     pub fn new(mut arena: Arena) -> ArenaController {
@@ -14,54 +17,114 @@ impl ArenaController {
             arena: arena,
             multi:1.0,
             score: vec![0,0,0,0],
-            deaths:Vec::new(),
+            deaths:Vec::new()
         };
-        c
+       c 
     }
-    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, menu: &mut MenuController, e: &E)
+    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64 ,  gilrs: &mut Gilrs,menu: &mut MenuController, e: &E)
     {
+
         use piston::input::Key;
         use piston::input::Button::Keyboard;
+        println!("{:?}, {},{:?}",gilrs[1].button_data(Button::West),gilrs[0].is_pressed(Button::West),gilrs.gamepads().count());
+        for (_id, gamepad) in gilrs.gamepads() {
+            println!("{}",gamepad.is_pressed(Button::West));
+        }
         let ref mut arena = self.arena;
         if let Some(Keyboard(Key::Left)) = e.press_args()   {
             if arena.cycles[0].dir != 3.0{
                 arena.cycles[0].dir = 1.0;
             }
         }
+        if gilrs[1].is_pressed(Button::West) {
+            if arena.cycles[0].dir != 3.0{
+                arena.cycles[0].dir = 1.0;
+            }
+
+        }
         if let Some(Keyboard(Key::Right)) = e.press_args()  {
             if arena.cycles[0].dir != 1.0{
                 arena.cycles[0].dir = 3.0;
             }
         }
-        if let Some(Keyboard(Key::Down)) = e.press_args() {
+        if gilrs[1].is_pressed(Button::East) {
+            if arena.cycles[0].dir != 1.0{
+                arena.cycles[0].dir = 3.0;
+            }
+
+        }
+        if let Some(Keyboard(Key::Down)) = e.press_args()  {
             if arena.cycles[0].dir != 0.0
             {
                 arena.cycles[0].dir = 2.0;
             }
+        }
+        if gilrs[1].is_pressed(Button::South) {
+            if arena.cycles[0].dir != 0.0
+            {
+                arena.cycles[0].dir = 2.0;
+            }
+
         }
         if let Some(Keyboard(Key::Up)) = e.press_args() {
             if arena.cycles[0].dir != 2.0{
                 arena.cycles[0].dir = 0.0;
             }
         }
-        if let Some(Keyboard(Key::A)) = e.press_args()  {
+        if gilrs[1].is_pressed(Button::North) {
+            if arena.cycles[0].dir != 2.0{
+                arena.cycles[0].dir = 0.0;
+            }
+
+        }
+        if let Some(Keyboard(Key::A)) = e.press_args() {
             if arena.cycles[1].dir != 3.0 {
                 arena.cycles[1].dir = 1.0;
             }
         }
-        if let Some(Keyboard(Key::D)) = e.press_args() {
+        if gilrs[0].is_pressed(Button::West) {
+            if arena.cycles[1].dir != 3.0 {
+                arena.cycles[1].dir = 1.0;
+            }
+
+        }
+        if let Some(Keyboard(Key::D)) = e.press_args()   {
             if  arena.cycles[1].dir != 1.0 {
                 arena.cycles[1].dir = 3.0;
             }
         }
-        if let Some(Keyboard(Key::S)) = e.press_args() {
+        if gilrs[0].is_pressed(Button::East) {
+            println!("east");
+            if  arena.cycles[1].dir != 1.0 {
+                arena.cycles[1].dir = 3.0;
+            }
+
+        }
+        if let Some(Keyboard(Key::S)) = e.press_args()  {
             if arena.cycles[1].dir != 0.0 {
                 arena.cycles[1].dir = 2.0;
             }
         }
-        if let Some(Keyboard(Key::W)) = e.press_args() {
+        if gilrs[0].is_pressed(Button::South) {
+            if arena.cycles[1].dir != 0.0 {
+                arena.cycles[1].dir = 2.0;
+            }
+
+        }
+        if let Some(Keyboard(Key::W)) = e.press_args()  {
             if arena.cycles[1].dir != 2.0 {
                 arena.cycles[1].dir = 0.0;
+            }
+        }
+        if gilrs[0].is_pressed(Button::North) {
+            if arena.cycles[1].dir != 2.0 {
+                arena.cycles[1].dir = 0.0;
+            }
+
+        }
+        for (_id, pad) in gilrs.gamepads() {
+            if pad.is_pressed(Button::Start){
+                arena.paused = !arena.paused;
             }
         }
         if let Some(Keyboard(Key::P)) = e.press_args() {
@@ -77,6 +140,7 @@ impl ArenaController {
                 arena.start_tick -= 4.0 * e.update_args().unwrap().dt;
             }
         }
+
     }
     pub fn update(&mut self, sizes:(f64, f64)) {
 
