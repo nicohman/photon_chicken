@@ -68,7 +68,7 @@ fn main() {
         match menu_controller.menu.selected.name.as_ref() {
             "menu" => {
                 menu_controller.update();
-                menu_controller.event(menu_view.settings.position, menu_view.settings.size,&e);
+                menu_controller.event(menu_view.settings.position, &mut gilrs, menu_view.settings.size,&e);
             },
             "cycles" => {
                 arena_controller.update((arena_view.settings.size_x, arena_view.settings.size_y));
@@ -77,7 +77,7 @@ fn main() {
             },
             "bricks" => {
                 bricks_controller.update((bricks_view.settings.size_x, bricks_view.settings.size_y));
-                bricks_controller.event(bricks_view.settings.position, bricks_view.settings.size, &mut menu_controller, &e);
+                bricks_controller.event(bricks_view.settings.position, bricks_view.settings.size, &mut gilrs, &mut menu_controller, &e);
             }
             "tower" => {
                 tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y));
@@ -86,7 +86,7 @@ fn main() {
             },
             _ => {
                 menu_controller.update();
-                menu_controller.event(menu_view.settings.position, menu_view.settings.size,&e);
+                menu_controller.event(menu_view.settings.position, &mut gilrs,menu_view.settings.size,&e);
             }
         }
         if let Some(args) = e.render_args() {

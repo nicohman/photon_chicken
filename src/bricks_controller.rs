@@ -3,6 +3,7 @@ use Bricks;
 use std::num;
 use MenuController;
 use menu::Mode;
+use gilrs::{Gilrs,Button,Event};
 pub struct BricksController {
     pub bricks: Bricks,
     pub keys : Keys,
@@ -46,7 +47,7 @@ impl BricksController {
             score:vec![0,0,0,0]
         }
     }
-    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, menu: &mut MenuController, e: &E){
+    pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64,gil:&mut Gilrs, menu: &mut MenuController, e: &E){
         use piston::input::Key;
         use piston::input::Button::Keyboard;
         use piston::input::mouse::MouseButton;
