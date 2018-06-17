@@ -16,6 +16,10 @@ impl MenuController {
     pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], gil: &mut Gilrs, size: f64, e: &E){
         use piston::input::Key;
         use piston::input::Button::Keyboard;
+            while let Some(ev) = gil.next_event() {
+        gil.update(&ev);
+        // Do other things with event
+    }
         for (_id,gamepad) in gil.gamepads() {
             if gamepad.is_pressed(Button::West){
                 self.menu.to_point = 1.5;

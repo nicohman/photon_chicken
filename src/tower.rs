@@ -22,6 +22,7 @@ pub struct User {
     pub position: [f64;2],
     pub id: i32,
     pub facing: f64,
+    pub sfacing:f64,
     pub dead: bool,
     pub shot_cooldown: f64,
 }
@@ -55,10 +56,10 @@ impl Tower {
         if cur.shot_cooldown <= 0.0 {
             self.shots.push(Shot {
                 position:[cur.position[0]+15.0,cur.position[1]+30.0],
-                dir:cur.facing
+                dir:cur.sfacing
             });
 
-            println!("Shot!{}", cur.facing);
+            println!("Shot!{}", cur.sfacing);
             cur.shot_cooldown = 0.5;
         }
     }
@@ -203,7 +204,7 @@ impl Tower {
     }
 
     pub fn reset (&mut self, sizes:[f64;2]) {
-        self.users = vec![User {position:[sizes[0]-60.0,sizes[1]-60.0],facing:1.0,id:0,shot_cooldown:0.0,dead:false}, User{position:[60.0,60.0],dead:false,id:1,facing:1.0,shot_cooldown:0.0}];
+        self.users = vec![User {position:[sizes[0]-60.0,sizes[1]-60.0],facing:1.0,sfacing:1.0,id:0,shot_cooldown:0.0,dead:false}, User{position:[60.0,60.0],dead:false,id:1,facing:1.0,sfacing:1.0,shot_cooldown:0.0}];
         self.spiders = Vec::new();
         self.shots = Vec::new();
         let mut i = 0.0;

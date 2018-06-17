@@ -80,8 +80,8 @@ fn main() {
                 bricks_controller.event(bricks_view.settings.position, bricks_view.settings.size, &mut gilrs, &mut menu_controller, &e);
             }
             "tower" => {
-                tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y));
-                tower_controller.event(tower_view.settings.position, tower_view.settings.size, &mut menu_controller, &e);
+                tower_controller.update((tower_view.settings.size_x, tower_view.settings.size_y),&mut gilrs);
+                tower_controller.event(tower_view.settings.position, tower_view.settings.size, &mut gilrs, &mut menu_controller, &e);
 
             },
             _ => {
