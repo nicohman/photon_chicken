@@ -79,11 +79,17 @@ impl TowerView {
             c_line.draw([i*settings.tile_size,0.0,i*settings.tile_size,settings.size_y],&c.draw_state,c.transform,g);
             i += 1.0;
         }
+        let edLine = Line::new(settings.edge_color_board, settings.board_edge_radius);
         i = 0.0;
         while i < (settings.size_y / settings.tile_size).round(){
             c_line.draw([0.0,i*settings.tile_size,settings.size_x,i*settings.tile_size],&c.draw_state,c.transform,g);
             i+=1.0;
         }
+
+        edLine.draw([0.0,0.0,settings.size_x,0.0],&c.draw_state, c.transform, g);
+        edLine.draw([0.0,0.0,0.0,settings.size_y], &c.draw_state, c.transform,g);
+        edLine.draw([0.0,settings.size_y,settings.size_x,settings.size_y], &c.draw_state, c.transform, g);
+        edLine.draw([settings.size_x,settings.size_y,settings.size_x,0.0], &c.draw_state, c.transform, g);
         Image::new().rect([0.0,0.0,60.0,90.0]).draw(&self.textures[0],&c.draw_state,c.transform.trans(settings.size_x/2.0 - 30.0,settings.size_y/2.0 - 45.0),g);
         let sp_rect = [0.0,0.0,30.0,30.0];
         let mut gen = OsRng::new().unwrap();

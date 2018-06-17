@@ -26,11 +26,12 @@ impl ArenaController {
 
         use piston::input::Key;
         use piston::input::Button::Keyboard;
-        println!("{:?}, {},{:?}",gilrs[1].button_data(Button::West),gilrs[0].is_pressed(Button::West),gilrs.gamepads().count());
-        for (_id, gamepad) in gilrs.gamepads() {
-            println!("{}",gamepad.is_pressed(Button::West));
-        }
+            while let Some(ev) = gilrs.next_event() {
+        gilrs.update(&ev);
+        // Do other things with event
+    }
         let ref mut arena = self.arena;
+
         if let Some(Keyboard(Key::Left)) = e.press_args()   {
             if arena.cycles[0].dir != 3.0{
                 arena.cycles[0].dir = 1.0;

@@ -5,7 +5,7 @@ extern crate glutin_window;
 extern crate graphics;
 extern crate opengl_graphics;
 extern crate rand;
-pub use gilrs::Gilrs;
+pub use gilrs::{Gilrs,GilrsBuilder};
 use piston::window::WindowSettings;
 use piston::event_loop::{Events, EventLoop, EventSettings};
 use piston::input::{RenderEvent, PressEvent};
@@ -38,7 +38,7 @@ mod bricks_controller;
 mod bricks_view;
 fn main() {
     let opengl = OpenGL::V3_2;
-    let settings = WindowSettings::new("PC", [512;2]).opengl(opengl).fullscreen(true).exit_on_esc(false).srgb(false);
+    let settings = WindowSettings::new("Photon^3", [512;2]).opengl(opengl).fullscreen(true).exit_on_esc(false).srgb(false);
     let mut window : GlutinWindow = settings.build().expect("Couldn't create window");
     let mut events = Events::new(EventSettings::new());
     let mut gl = GlGraphics::new(opengl);
@@ -60,7 +60,7 @@ fn main() {
     let mut bricks_view = BricksView::new(bricks_view_settings);
     let texture_settings = TextureSettings::new().filter(Filter::Nearest);
     let mut fwalls = false;
-    let mut gilrs = Gilrs::new().unwrap();
+    let mut gilrs = GilrsBuilder::new().set_update_state(true).build().unwrap();
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
     arena_controller.arena.reset_game();
     tower_controller.tower.reset([tower_view.settings.size_x,tower_view.settings.size_y]);
