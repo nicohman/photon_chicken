@@ -107,7 +107,8 @@ impl TowerView {
         }
         for u  in &controller.tower.users {
             if !u.dead{
-            Rectangle::new(get_color(u.id)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
+                println!("{}",u.id);
+            Rectangle::new(get_color(u.id+1)).draw([0.0,0.0,30.0,60.0],&c.draw_state,c.transform.trans(u.position[0],u.position[1]),g);
             }
         }
         for s in &controller.tower.shots {

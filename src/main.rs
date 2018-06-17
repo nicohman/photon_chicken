@@ -63,7 +63,7 @@ fn main() {
     let mut gilrs = GilrsBuilder::new().set_update_state(true).build().unwrap();
     let mut uCount = gilrs.gamepads().count();
     let ref mut glyphs = GlyphCache::new("assets/font.ttf", (), texture_settings).expect("Couldn't load font");
-    arena_controller.arena.reset_game();
+    arena_controller.arena.reset_game(uCount);
     tower_controller.tower.reset([tower_view.settings.size_x,tower_view.settings.size_y],uCount);
     while let Some(e) = events.next(&mut window) {
         match menu_controller.menu.selected.name.as_ref() {

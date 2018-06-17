@@ -74,9 +74,10 @@ num:50,
         deaths
     }
     pub fn check_game(&mut self) -> i32 {
+        let cyC = self.cycles.len();
         if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() == 1 {
             let win = self.cycles.iter().filter(|x| !x.dead).next().unwrap().owner.to_owned();
-            self.reset_game();
+            self.reset_game(cyC);
             self.cycles[(win-1) as usize].num +=20;
             for cy in &mut self.cycles {
                 if cy.owner != win && cy.num >= 50 {
@@ -89,18 +90,21 @@ num:50,
             }
             win
         } else if self.cycles.iter().filter(|x| !x.dead).collect::<Vec<&Lightcycle>>().len() < 1 {
-            self.reset_game();
+            self.reset_game(cyC);
             -2
         } else{
             return -1;
         }
     }
-    pub fn reset_game(&mut self) {
+    pub fn reset_game(&mut self,uC : usize) {
         if self.cycles.len() > 0 {
             self.cycles = Vec::new();
         }
-        self.create_cycle([900.0, 100.0]);
-        self.create_cycle([300.0, 100.0]);
+        let mut i = 0;
+        while i < uC {
+            self.create_cycle([300.0 + (i as f64 * 250.0), 100.0]);
+            i+= 1;
+        }
         self.trails = HashMap::new();
         self.start_tick = 3.0;
     }
