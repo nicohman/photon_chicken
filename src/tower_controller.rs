@@ -157,7 +157,19 @@ impl TowerController {
             // Do other things with event
         }
         let c1 = vec![gilrs[1].value(LeftStickX),gilrs[1].value(LeftStickY),gilrs[1].value(RightStickX),gilrs[1].value(RightStickY)];
-        println!("{:?}",c1);
+        let mut quad = 0;
+        if c1[2] > 0.0 && c1[3] > 0.0 {
+            quad = 0;
+        } else if c1[2] > 0.0 {
+            quad = 1;
+        } else if c1[3] < 0.0 {
+            quad = 2;
+        } else if c1[3] > 0.0 {
+            quad = 3;
+        }
+        let sdir = ((1.0/(c1[2].abs() + c1[3].abs())) * c1[2].abs()) as f64;
+        println!("{}",sdir);
+        self.tower.users[1].sfacing = (sdir + quad as f64 ) % 4.0;
         let movingC1 = c1[0] > 0.1 || c1[1] > 0.1 || c1[0] < -0.1 || c1[1] < -0.1;
         let c1RR = c1[0] > 0.1;
         let c1UR = c1[1] > 0.1;
@@ -184,7 +196,8 @@ impl TowerController {
         } else if c1UR {
             self.tower.users[1].facing = 0.0;
         }
-        if c1LL && c1UL {
+
+        /*if c1LL && c1UL {
             self.tower.users[1].sfacing = 3.5;
         } else if c1LL && c1DL {
             self.tower.users[1].sfacing = 2.5;
@@ -200,7 +213,7 @@ impl TowerController {
             self.tower.users[1].sfacing = 2.0;
         } else if c1UL {
             self.tower.users[1].sfacing = 0.0;
-        }
+        }*/
         if (self.keys.left && self.keys.up) {
             self.tower.users[0].sfacing = 3.5;
         } else if self.keys.left && self.keys.down {

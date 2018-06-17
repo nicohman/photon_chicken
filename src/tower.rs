@@ -157,7 +157,7 @@ impl Tower {
                             skip = true;
                         } else if to[1] + SPIDER[1]/2.0 > sp.position[1] && sp.position[1] + SPIDER[1]/2.0 > to[1] {
 
-                           // to[1] = to[1] - sp.position[1];
+                            // to[1] = to[1] - sp.position[1];
                             skip = true;
                         }
                     }
@@ -188,17 +188,47 @@ impl Tower {
             i+=1;
         }
         for mut cur in &mut self.shots {
-            cur.position = match cur.dir {
-                0.0 => [cur.position[0], cur.position[1] - SHOT_SPEED],
-                0.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] - SHOT_SPEED],
-                1.0 => [cur.position[0] + SHOT_SPEED, cur.position[1]],
-                1.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-                2.0 => [cur.position[0], cur.position[1] + SHOT_SPEED],
-                2.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-                3.0 => [cur.position[0] - SHOT_SPEED, cur.position[1]],
-                3.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] - SHOT_SPEED],
-                _ => cur.position
-            };
+            let mut flipX = 1.0;
+            let mut flipY = 1.0;
+            if !(cur.dir  > 0.0 && cur.dir < 2.0) {
+                flipX = -1.0;
+            }
+            if !(cur.dir > 1.0 && cur.dir < 3.0) {
+                flipY = -1.0;
+            }
+            let mut cPx = cur.position[0];
+            let mut cPy = cur.position[1];
+            cPx += SHOT_SPEED * ((cur.dir % 1.0)) * flipX;
+            cPy += SHOT_SPEED * (1.0 - ((cur.dir) % 1.0)) * flipY;
+            /*if (cur.dir < 1.0 && cur.dir >= 0.0){
+                cPy -= SHOT_SPEED * (1.0- (cur.dir % 1.0));
+            }
+            if (cur.dir > 3.0) {
+                cPy -= SHOT_SPEED * (1.0-(cur.dir %1.0));
+            }
+            if (cur.dir > 1.0 && cur.dir < 3.0) {
+                cPy += SHOT_SPEED * (1.0-(cur.dir % 1.0));
+            }
+            if (cur.dir > 0.0 && cur.dir < 2.0) {
+
+                cPx += SHOT_SPEED * (1.0-(cur.dir % 1.0));
+            }
+            if (cur.dir > 2.0)
+            {
+                cPx -= SHOT_SPEED * (1.0-(cur.dir % 1.0));
+            }*/
+            cur.position = [cPx,cPy];
+            /*match cur.dir {
+              0.0 => [cur.position[0], cur.position[1] - SHOT_SPEED],
+              0.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] - SHOT_SPEED],
+              1.0 => [cur.position[0] + SHOT_SPEED, cur.position[1]],
+              1.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] + SHOT_SPEED],
+              2.0 => [cur.position[0], cur.position[1] + SHOT_SPEED],
+              2.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] + SHOT_SPEED],
+              3.0 => [cur.position[0] - SHOT_SPEED, cur.position[1]],
+              3.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] - SHOT_SPEED],
+              _ => cur.position
+              };*/
 
         }
     }
@@ -228,7 +258,7 @@ impl Tower {
                 cooldown:0.0,
                 splitting:false,
                 split_an:0.0,
-                splitter: i < START * INIT,
+                splitter: 0.0 == (i % (START * INIT)),
             });
             i += 1.0;
         }
