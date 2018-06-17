@@ -70,7 +70,8 @@ impl TowerView {
 
         let ref settings = self.settings;
         if !self.done_first {
-            controller.tower.reset([settings.size_x,settings.size_y]);
+            let uC = controller.tower.users.len();
+            controller.tower.reset([settings.size_x,settings.size_y],uC);
             self.done_first = true;
         }
         let mut i = 0.0;

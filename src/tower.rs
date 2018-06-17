@@ -1,6 +1,6 @@
 const START: f64 = 16.0;
 const INIT: f64 = 0.25;
-const SHOT_SPEED : f64 =  1.5;
+const SHOT_SPEED : f64 =  3.5;
 const U_SPEED : f64 = 1.0;
 use rand::Rng;
 use rand::os::OsRng;
@@ -25,6 +25,18 @@ pub struct User {
     pub sfacing:f64,
     pub dead: bool,
     pub shot_cooldown: f64,
+}
+impl User {
+    pub fn new (id:i32, pos: [f64;2]) -> User {
+        User {
+            position:pos,
+            id:id,
+            facing:1.0,
+            sfacing:1.0,
+            dead:false,
+            shot_cooldown:0.0
+        }
+    }
 }
 pub struct Tower {
     pub users: Vec<User>,
@@ -200,41 +212,13 @@ impl Tower {
             let mut cPy = cur.position[1];
             cPx += SHOT_SPEED * ((cur.dir % 1.0)) * flipX;
             cPy += SHOT_SPEED * (1.0 - ((cur.dir) % 1.0)) * flipY;
-            /*if (cur.dir < 1.0 && cur.dir >= 0.0){
-                cPy -= SHOT_SPEED * (1.0- (cur.dir % 1.0));
-            }
-            if (cur.dir > 3.0) {
-                cPy -= SHOT_SPEED * (1.0-(cur.dir %1.0));
-            }
-            if (cur.dir > 1.0 && cur.dir < 3.0) {
-                cPy += SHOT_SPEED * (1.0-(cur.dir % 1.0));
-            }
-            if (cur.dir > 0.0 && cur.dir < 2.0) {
-
-                cPx += SHOT_SPEED * (1.0-(cur.dir % 1.0));
-            }
-            if (cur.dir > 2.0)
-            {
-                cPx -= SHOT_SPEED * (1.0-(cur.dir % 1.0));
-            }*/
             cur.position = [cPx,cPy];
-            /*match cur.dir {
-              0.0 => [cur.position[0], cur.position[1] - SHOT_SPEED],
-              0.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] - SHOT_SPEED],
-              1.0 => [cur.position[0] + SHOT_SPEED, cur.position[1]],
-              1.5 => [cur.position[0] + SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-              2.0 => [cur.position[0], cur.position[1] + SHOT_SPEED],
-              2.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] + SHOT_SPEED],
-              3.0 => [cur.position[0] - SHOT_SPEED, cur.position[1]],
-              3.5 => [cur.position[0] - SHOT_SPEED, cur.position[1] - SHOT_SPEED],
-              _ => cur.position
-              };*/
-
         }
     }
 
-    pub fn reset (&mut self, sizes:[f64;2]) {
-        self.users = vec![User {position:[sizes[0]-60.0,sizes[1]-60.0],facing:1.0,sfacing:1.0,id:0,shot_cooldown:0.0,dead:false}, User{position:[60.0,60.0],dead:false,id:1,facing:1.0,sfacing:1.0,shot_cooldown:0.0}];
+    pub fn reset (&mut self, sizes:[f64;2],users:usize) {
+        self.users = vec![User::new(0,[sizes[0]-60.0,sizes[1]-60.0]),User::new(1,[60.0,60.0]), User::new(2,[60.0,sizes[1]-60.0]),User::new(3,[sizes[0]-60.0,60.0])];
+        self.users.truncate(users);
         self.spiders = Vec::new();
         self.shots = Vec::new();
         let mut i = 0.0;

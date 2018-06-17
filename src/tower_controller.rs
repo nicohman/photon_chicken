@@ -4,7 +4,7 @@ use std::num;
 use MenuController;
 use gilrs::{Gilrs, Button, Event};
 use gilrs::Axis::{RightStickX,RightStickY,LeftStickX,LeftStickY};
-use gilrs::Button::RightTrigger2;
+use gilrs::Button::{RightTrigger2,East, Start,Select,West};
 use menu::Mode;
 pub struct TowerController {
     pub tower: Tower,
@@ -48,7 +48,7 @@ impl TowerController {
     }
     pub fn event<E: GenericEvent>(&mut self, pos: [f64; 2], size: f64, gilrs:&mut Gilrs,menu: &mut MenuController, e: &E)
     {
-                while let Some(ev) = gilrs.next_event() {
+        while let Some(ev) = gilrs.next_event() {
             gilrs.update(&ev);
             // Do other things with event
         }
@@ -112,8 +112,23 @@ impl TowerController {
         if let Some(Keyboard(Key::E)) = e.press_args() {
             tower.shoot(0);
         }
-        if gilrs[1].is_pressed(RightTrigger2) {
-            tower.shoot(1);
+        let mut i = 0;
+        while i < gilrs.gamepads().count() {
+            if gilrs[i].is_pressed(RightTrigger2) || gilrs[i].is_pressed(West){
+                tower.shoot(i as i32);
+            }
+            if gilrs[i].is_pressed(Start) {
+                menu.menu.act_point = 0.5;
+                menu.menu.to_point = -1.0;
+
+                menu.menu.switch(Mode {name:String::from("menu")});
+
+
+            }
+            if gilrs[i].is_pressed(Select) {
+                tower.paused = !tower.paused;
+            }
+            i += 1;
         }
         if let Some(Button::Mouse(MouseButton::Left)) = e.press_args() {
             println!("Mouse");
@@ -156,64 +171,56 @@ impl TowerController {
             gilrs.update(&ev);
             // Do other things with event
         }
-        let c1 = vec![gilrs[1].value(LeftStickX),gilrs[1].value(LeftStickY),gilrs[1].value(RightStickX),gilrs[1].value(RightStickY)];
-        let mut quad = 0;
-        if c1[2] > 0.0 && c1[3] > 0.0 {
-            quad = 0;
-        } else if c1[2] > 0.0 {
-            quad = 1;
-        } else if c1[3] < 0.0 {
-            quad = 2;
-        } else if c1[3] > 0.0 {
-            quad = 3;
-        }
-        let sdir = ((1.0/(c1[2].abs() + c1[3].abs())) * c1[2].abs()) as f64;
-        println!("{}",sdir);
-        self.tower.users[1].sfacing = (sdir + quad as f64 ) % 4.0;
-        let movingC1 = c1[0] > 0.1 || c1[1] > 0.1 || c1[0] < -0.1 || c1[1] < -0.1;
-        let c1RR = c1[0] > 0.1;
-        let c1UR = c1[1] > 0.1;
-        let c1LR = c1[0] < -0.1;
-        let c1DR = c1[1] < -0.1;
-        let c1RL = c1[2] > 0.1;
-        let c1UL = c1[3] > 0.1;
-        let c1LL = c1[2] < -0.1;
-        let c1DL = c1[3] < -0.1;
-        if c1LR && c1UR {
-            self.tower.users[1].facing = 3.5;
-        } else if c1LR && c1DR {
-            self.tower.users[1].facing = 2.5;
-        } else if c1LR {
-            self.tower.users[1].facing = 3.0;
-        } else if c1RR && c1UR {
-            self.tower.users[1].facing = 0.5;
-        } else if c1RR && c1DR {
-            self.tower.users[1].facing = 1.5;
-        } else if c1RR {
-            self.tower.users[1].facing = 1.0;
-        } else if c1DR{
-            self.tower.users[1].facing = 2.0;
-        } else if c1UR {
-            self.tower.users[1].facing = 0.0;
-        }
+        let mut i = 0;
+        while i < gilrs.gamepads().count() {
+            let c1 = vec![gilrs[i].value(LeftStickX),gilrs[i].value(LeftStickY),gilrs[i].value(RightStickX),gilrs[i].value(RightStickY)];
+            let mut quad = 0;
+            if c1[2] > 0.0 && c1[3] > 0.0 {
+                quad = 0;
+            } else if c1[2] > 0.0 {
+                quad = 1;
+            } else if c1[3] < 0.0 {
+                quad = 2;
+            } else if c1[3] > 0.0 {
+                quad = 3;
+            }
+            let sdir = ((1.0/(c1[2].abs() + c1[3].abs())) * c1[2].abs()) as f64;
+            println!("{}",sdir);
+            self.tower.users[i].sfacing = (sdir + quad as f64 ) % 4.0;
+            let movingC1 = c1[0] > 0.1 || c1[1] > 0.1 || c1[0] < -0.1 || c1[1] < -0.1;
+            let c1RR = c1[0] > 0.1;
+            let c1UR = c1[1] > 0.1;
+            let c1LR = c1[0] < -0.1;
+            let c1DR = c1[1] < -0.1;
+            let c1RL = c1[2] > 0.1;
+            let c1UL = c1[3] > 0.1;
+            let c1LL = c1[2] < -0.1;
+            let c1DL = c1[3] < -0.1;
+            if c1LR && c1UR {
+                self.tower.users[i].facing = 3.5;
+            } else if c1LR && c1DR {
+                self.tower.users[i].facing = 2.5;
+            } else if c1LR {
+                self.tower.users[i].facing = 3.0;
+            } else if c1RR && c1UR {
+                self.tower.users[i].facing = 0.5;
+            } else if c1RR && c1DR {
+                self.tower.users[i].facing = 1.5;
+            } else if c1RR {
+                self.tower.users[i].facing = 1.0;
+            } else if c1DR{
+                self.tower.users[i].facing = 2.0;
+            } else if c1UR {
+                self.tower.users[i].facing = 0.0;
+            }
+            if !self.tower.paused {
+                if movingC1 {
+                    self.tower.move_u(i as i32, [sizes.0,sizes.1]);
+                }
 
-        /*if c1LL && c1UL {
-            self.tower.users[1].sfacing = 3.5;
-        } else if c1LL && c1DL {
-            self.tower.users[1].sfacing = 2.5;
-        } else if c1LL {
-            self.tower.users[1].sfacing = 3.0;
-        } else if c1RL && c1UL {
-            self.tower.users[1].sfacing = 0.5;
-        } else if c1RL && c1DL {
-            self.tower.users[1].sfacing = 1.5;
-        } else if c1RL {
-            self.tower.users[1].sfacing = 1.0;
-        } else if c1DL{
-            self.tower.users[1].sfacing = 2.0;
-        } else if c1UL {
-            self.tower.users[1].sfacing = 0.0;
-        }*/
+            }
+            i += 1;
+        }
         if (self.keys.left && self.keys.up) {
             self.tower.users[0].sfacing = 3.5;
         } else if self.keys.left && self.keys.down {
@@ -256,19 +263,18 @@ impl TowerController {
             }
         }
         if !self.tower.paused {
-            if movingC1 {
-                self.tower.move_u(1, [sizes.0,sizes.1]);
-            }
+
             if self.keys.w || self.keys.a || self.keys.s || self.keys.d  {
                 self.tower.move_u(0, [sizes.0,sizes.1]);
             }
             self.tower.tick();
+            let uC = self.tower.users.len();
             let victory = self.tower.check_win([sizes.0/2.0 - 30.0, sizes.1/2.0 -45.0]);
             if victory != -1 && victory != -2{
-                self.tower.reset([sizes.0,sizes.1]);
+                self.tower.reset([sizes.0,sizes.1],uC);
                 self.score[victory as usize] += 1;
             } else if victory == -2 {
-                self.tower.reset([sizes.0,sizes.1]);
+                self.tower.reset([sizes.0,sizes.1],uC);
             }
         }
     }
